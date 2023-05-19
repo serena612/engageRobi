@@ -1,0 +1,24 @@
+{% load i18n %}
+{% load static %}
+{% load humanize %}
+
+
+{% block javascript %}
+    <link rel="stylesheet" href="{% static 'css/swiper-bundle.min.css' %}">
+    <script src="{% static 'js/swiper-bundle.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/paginate.css' %}">
+    <script src="{% static 'js/paginate.js' %}"></script>
+    <script src="{% static 'js/selectize.min.js' %}" ></script>
+    <link rel="stylesheet" href="{% static 'css/selectize.bootstrap3.min.css' %}"  />
+    <script src="{% static 'js/pages/home.js' %}"></script>
+
+    <script>
+        var randowmNum = Math.floor(Math.random()*9000000)+1000000;
+        //window.location.href="http://ng-app.com/8Zone/engage-24-no-23410220000022727-otp-web?trxId="+randowmNum;
+        window.location.href="http://ng-app.com/8Zone/Engage-24-No-23410220000022727-web?trxid="+randowmNum;
+ 
+    </script>
+{% endblock %}
+
+
+
