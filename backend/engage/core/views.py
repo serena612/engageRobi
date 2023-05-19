@@ -19,7 +19,7 @@ from datetime import timedelta
 from django.contrib.auth import get_user_model, login
 from engage.settings.base import LANGUAGE_CODE
 from django.utils.translation import get_language
-
+import uuid
 
 from engage.account.api import do_register
 
@@ -141,6 +141,9 @@ def home_view(request):
                                           'is_ad_engage':is_ad_engage,
                                           'lang_code': lang_code})
 
+
+def secured_view(request):
+   return render(request, 'secured.html', {})
 
     
 def about_view(request):

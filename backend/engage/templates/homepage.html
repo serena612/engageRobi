@@ -1,0 +1,42 @@
+{% load i18n %}
+{% load static %}
+{% load humanize %}
+
+
+{% block javascript %}
+    <link rel="stylesheet" href="{% static 'css/swiper-bundle.min.css' %}">
+    <script src="{% static 'js/swiper-bundle.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/paginate.css' %}">
+    <script src="{% static 'js/paginate.js' %}"></script>
+    <script src="{% static 'js/selectize.min.js' %}" ></script>
+    <link rel="stylesheet" href="{% static 'css/selectize.bootstrap3.min.css' %}"  />
+    <script src="{% static 'js/pages/home.js' %}"></script>
+
+    <script>
+        var is_ad_google = '{{ is_ad_google }}';
+        var is_ad_engage = '{{ is_ad_engage }}';
+        var lang_code = '{{ lang_code }}';
+        var winner_transl = {% blocktrans %}"winners" {% endblocktrans %};
+        var leisureGames_transl = {% blocktrans %}"Please login or register to Engage to be able to play leisure games, earn coins, and win multiple prizes" {% endblocktrans %};
+        var featuredGames_transl = {% blocktrans %}"Please login or register to Engage to be able to play featured games and win multiple prizes" {% endblocktrans %};
+        var joinNow_transl = {% blocktrans %}"Please login or register to Engage to be able to join tournaments and compete with others to earn many cash and other prizes" {% endblocktrans %};
+        var getBtn_transl = {% blocktrans %}"Please login or register to Engage to buy coins, increase your balance, and win multiple cash and other prizes" {% endblocktrans %};
+        var redeemGifts_transl = {% blocktrans %}"Please login or register to Engage to redeem gifts and win multiple cash and other prizes" {% endblocktrans %};
+        var join_now = {% blocktrans %}"JOIN NOW" {% endblocktrans %};
+        var pool_prize = {% blocktrans %}"POOL PRIZE" {% endblocktrans %};
+        var register = {% blocktrans %}"REGISTER" {% endblocktrans %};
+        var send_coins = {% blocktrans %}"Send Coins" {% endblocktrans %};
+        var unfriend = {% blocktrans %}"Unfriend" {% endblocktrans %};
+        var view = {% blocktrans %}"VIEW" {% endblocktrans %};
+        var upcoming = {% blocktrans %}"Upcoming" {% endblocktrans %};
+        var previous = {% blocktrans %}"Previous" {% endblocktrans %};
+        var ongoing = {% blocktrans %}"Ongoing" {% endblocktrans %};
+ 
+    </script>
+
+
+    
+{% endblock %}
+
+
+

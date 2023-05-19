@@ -13,6 +13,7 @@ router.register('featured_games', api.FeaturedGameViewSet)
 
 urlpatterns = [
     path('', views.home_view, name='home'),
+    path('secured', views.secured_view, name='secured'),
     path('about', views.about_view, name='about'),
     path('faq', views.faq_view, name='faq'),
     path('headers', views.header_view, name='headers'),
