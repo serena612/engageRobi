@@ -19,12 +19,16 @@ from engage.settings.base import API_SERVER_URL
 import requests
 
 
+
+from django.http import JsonResponse
+from django.utils import timezone
+
 from engage.account.exceptions import (
     GameAccountUnavailable,
     MinimumProfileLevelException
 )
 from .constants import TournamentState
-from .exceptions import ParticipantExists, FreeUserCannotJoinTournament,TournamentCloseException,TournamentFirstException,TournamentStartException,UserInformException,UnbilledUserCannotJoinTournament
+from .exceptions import ParticipantExists, FreeUserCannotJoinTournament,TournamentCloseException,TournamentFirstException,TournamentStartException,UserInformException,UnbilledUserCannotJoinTournament,TournamentGetPrizeException
 from .models import (
     Tournament,
     TournamentParticipant,
@@ -40,6 +44,9 @@ from .serializers import (
 from ..tournament.models import get_prize
 from ..core.models import Sticker
 from ..operator.constants import SubscriptionType
+
+import logging 
+
 
 def send_sms(user, message, vault=None):
     headers = {'Content-type':'application/json', 
@@ -240,6 +247,7 @@ class TournamentViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin,
     @action(methods=['GET'], detail=True, permission_classes=(permissions.IsAdminUser,))
     @transaction.atomic()
     def close(self, request, slug):
+        is_closed = False
         tournament = self.get_object()
         
 
@@ -257,12 +265,19 @@ class TournamentViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin,
             else:
                 prize = tournament_prize.actual_data_package
             if not get_prize(winner.mobile, prize, prize_type, winner.subscription,tournament.id):
-                raise TournamentCloseException()
-
+                is_closed = True
+                
+            
+        
         tournament.end_date = timezone.now()
         tournament.closed_on = timezone.now()
         tournament.save()
         tournament.send_notification_close()
+        if is_closed == True:
+           return Response(
+                {"detail": "Tournament closed but error in granting prizes, please check with technical team!"},
+                status=status.HTTP_406_NOT_ACCEPTABLE
+            )
         return redirect(request.META["HTTP_REFERER"])
 
 
