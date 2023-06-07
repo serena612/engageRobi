@@ -47,13 +47,19 @@ class NotificationType(LabelChoices):
 
 class SubscriptionPlan(LabelChoices):
     FREE = 'free', 'Free'
-    PAID1 = 'paid1', 'Paid 1'
-    PAID2 = 'paid2', 'Paid 2'
+    PAID1 = 'p30', 'P30'
+    PAID2 = 'p50', 'P50'
+    DAILY = 'daily', 'Daily'
+    WEEKLY = 'weekly', 'Weekly'
+    MONTHLY = 'monthly', 'Monthly'
 
 class SubscriptionPackages(LabelChoices):
     FREE = 'free', 'Free'
     PAID1 = 'p30', 'P30'
     PAID2 = 'p50', 'P50'
+    DAILY = 'daily', 'Daily'
+    WEEKLY = 'weekly', 'Weekly'
+    MONTHLY = 'monthly', 'Monthly'
 
 
 class SectionLog(LabelChoices):
