@@ -113,10 +113,12 @@ class UpdateSubscriptionSerializer(serializers.Serializer):
     msisdn = serializers.CharField()
     refid = serializers.CharField(required=False)
     new_substatus = serializers.CharField() # serializers.ChoiceField(choices=SubscriptionPlan.choices)
-
+    aocTransID = serializers.CharField()
+    
     def validate(self, attrs):
         msisdn = attrs.get('msisdn')
         new_substatus = attrs.get('new_substatus')
+        aocTransID = attrs.get('aocTransID')
         try:
             refid = attrs.get('refid')
         except:

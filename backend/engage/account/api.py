@@ -25,6 +25,7 @@ from engage.core.models import HTML5Game
 import sys, base64, hvac, json
 from django.utils.translation import ugettext_lazy as _
 from engage.account.middlewares import LastSeenMiddleware
+from engage.settings.base import REGISTRATION_REDIRECT_URL
 
 
 from .constants import (
@@ -63,9 +64,15 @@ from .constants import (
 from engage.operator.models import RedeemPackage
 from .exceptions import AdLimitReached, AdAlreadyClicked, SelfAd
 from engage.core.models import HTML5Game
+
+import logging
+
+
 UserModel = get_user_model()
 OWN_CREATIVES = ['6178477617', '6180000871', '6180646283', '6180545204']
 
+aocTransIDGlobal = ''
+aocMobile = ''
 
 class EncryptedMessageSender:
     def __init__(self, server=API_SERVER_URL, vault_url=VAULT_SERVER_URL,
@@ -304,6 +311,37 @@ def subscribe_api(phone_number, idbundle, idservice, referrer=None, idchannel=2,
         print(api_call.content, api_call.status_code)
         return api_call.content, api_call.status_code
 
+def unsubscribe_api(phone_number,subscriptionId,referrer=None,vault=None):  # default channel id is web
+    print("Unsubscribing", phone_number)
+    command = '/api/User/UnSubscribe'
+    uniqueid = str(uuid4())
+    data = {'msisdn': phone_number, 
+            'subscriptionId':subscriptionId,
+            'transactionId':uniqueid,
+            }
+    if referrer:
+        print("Referrer by:", referrer)
+        data['inviteeId'] = str(referrer)
+    if vault:
+        return vault.send(command=command, data=data)       
+    url = API_SERVER_URL+command
+    try: 
+        print(data)
+        api_call = requests.post(url, headers={}, json=data, timeout=3)
+        print(api_call)
+        print(api_call.content)
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        # raise SystemExit(e)
+        print(e)
+        return 'Server error', 555
+    if api_call.status_code==200:
+        print(api_call.json())
+        res = api_call.json()['statusCode']
+        return res['message'], res['code']
+    else:
+        print(api_call.content, api_call.status_code)
+        return api_call.content, api_call.status_code
+
 def upgrade_api(phone_number, idbundle, idservice, referrer=None, idchannel=2, vault=None):  # default channel id is web
     print("Subscribing", phone_number, "to", idbundle, "service", idservice)
     command = '/api/User/Upgrade'
@@ -382,16 +420,16 @@ def do_register(self, request, username, subscription):
             referrer = None
     else:
         referrer=None
-    if subscription == SubscriptionPlan.FREE:
+    if subscription == SubscriptionPlan.DAILY:
         idbundle = 1
-        idservice = SubscriptionPackages.FREE
-    elif subscription == SubscriptionPlan.PAID1:
-        idbundle = 2
-        idservice = SubscriptionPackages.PAID1
+        idservice = SubscriptionPackages.DAILY
         is_billed = True
-    elif subscription == SubscriptionPlan.PAID2:
+        idbundle = 2
+        idservice = SubscriptionPackages.WEEKLY
+        is_billed = True
+    elif subscription == SubscriptionPlan.MONTHLY:
         idbundle = 3
-        idservice = SubscriptionPackages.PAID2
+        idservice = SubscriptionPackages.MONTHLY
         is_billed = True
     else:
         print("unknown subscription", subscription)
@@ -407,12 +445,12 @@ def do_register(self, request, username, subscription):
 
     if code2==76 or code2==77 or code2==79 or code2==75:  # here we set subscription to idbundle since user already has subscribed somehow using another mean
         if response2['idbundle'] == 1:
-            subscription = SubscriptionPlan.FREE
+            subscription = SubscriptionPlan.DAILY
         elif response2['idbundle'] == 2:
-            subscription = SubscriptionPlan.PAID1
+            subscription = SubscriptionPlan.WEEKLY
             is_billed = True
         elif response2['idbundle'] == 3:
-            subscription = SubscriptionPlan.PAID2
+            subscription = SubscriptionPlan.MONTHLY
             is_billed = True
     if code2==56 or code2==80 or code2==76 or code2==77 or code2==79 or code2==75 or INTEGRATION_DISABLED or username.startswith('234102'):  # 56 profile does not exist - 76 pending sub - 79 pending unsub - 77 sub - 75 under process
         if code2==56 or code2==80:  # profile does not exist so we send subscription request
@@ -478,7 +516,7 @@ def do_register(self, request, username, subscription):
                 #@notify_when(events=[NotificationTemplate.DAILY],
                 #            is_route=False, is_one_time=False)
                 #def notify(user, user_notifications):
-                #    """ extra logic if needed """
+            request.session.save()
                 #notify(user=user)
             return redirect('/')
             # return Response({'message': response2}, status=514)
@@ -538,14 +576,33 @@ class AuthViewSet(viewsets.GenericViewSet):
             return Response({}, status=status.HTTP_200_OK)
 
     @action(methods=['POST'], detail=False)
+    def check_data_sync(self, request):
+        
+        aocTransID = request.data.get('aocTransID')
+        print("reloading data for",aocTransID)
+        try:
+            user = UserModel.objects.filter(
+            aocTransID=aocTransID,
+            subscription='' ,
+            is_superuser=False,
+            is_staff=False
+            ).first()
+            if user :
+                return Response({'message': 'Number not updated yet'}, status=100)
+                
+            else:
+                return Response({}, status=status.HTTP_200_OK)
+
+        except UserModel.DoesNotExist:
+            return Response({'error': 'Invalid Number'}, status=472)
+        
+        
+        
+    @action(methods=['POST'], detail=False)
     def verify_mobile(self, request):
         username = request.data.get('phone_number')
         print("verifying", username)
         try:
-            # user = UserModel.objects.get(
-            #     username__iexact=username,
-            #     region=request.region
-            # )
             user = UserModel.objects.filter(
                 username__iexact=username,
                 region=request.region,
@@ -579,6 +636,7 @@ class AuthViewSet(viewsets.GenericViewSet):
                 return Response({'error': response}, status=code)
         else:  # do you want to login if none ? here we assume yes
             return Response({}, status=status.HTTP_200_OK)
+    
     
     @action(methods=['POST'], detail=False)
     def reg_verify_mobile(self, request):
@@ -630,9 +688,13 @@ class AuthViewSet(viewsets.GenericViewSet):
         
         otp = request.POST.get('code')
         if usermob:
+            logger.info('verify_pincode request', usermob,otp)
             response, code = verify_pincode(usermob, otp, vault=self.client)  # what if he is registered on api but not here and loaddata check if pendingsub
+            logger.info('verify_pincode request',response, code)
         if (usermob and code==0) or username in USER_EXCEPTION_LIST or INTEGRATION_DISABLED or usermob.startswith('234102') or DISABLE_PIN:
+            logger.info('load_data_api request', usermob)
             response2, code2 = load_data_api(usermob, "1", self.client)  # 1 for wifi
+            logger.info('load_data_api response', usermob,response2, code2)
             
             if code2==56 or code2==75 or code2==76 or code2==77 or code2==79 or username in USER_EXCEPTION_LIST or INTEGRATION_DISABLED or usermob.startswith('234102'):  # 56 profile does not exist - 76 pending sub - 77 pending unsub - 79 sub
                 
@@ -772,7 +834,150 @@ class AuthViewSet(viewsets.GenericViewSet):
                 code+=400
             return Response({'error': response}, status=code)
 
-    
+
+    @action(methods=['POST'], detail=False)
+    def loginrobi(self, request):
+        aocTransID = request.POST.get('aocTransID')
+        # get real mobile if it is username
+        try:
+            user = UserModel.objects.filter(
+                aocTransID__iexact=aocTransID
+            ).first()
+            if user:
+                usermob = str(user.mobile)
+                username = str(user.username)
+            else:
+                usermob = aocTransID
+        except UserModel.DoesNotExist:
+            usermob = aocTransID
+        
+        
+        if usermob  or username in USER_EXCEPTION_LIST or INTEGRATION_DISABLED  or DISABLE_PIN:
+ 
+            response2, code2 = load_data_api(usermob, "1", self.client)  # 1 for wifi
+            
+            if code2==56 or code2==75 or code2==76 or code2==77 or code2==79 or username in USER_EXCEPTION_LIST or INTEGRATION_DISABLED:  # 56 profile does not exist - 76 pending sub - 77 pending unsub - 79 sub
+                
+                try:
+                    user = UserModel.objects.filter(
+                        username__iexact=username,
+                        region=request.region,
+                        is_superuser=False,
+                        is_staff=False
+                    ).first()
+                    if not user :
+                        user = UserModel.objects.filter(
+                                mobile__iexact=username,
+                                region=request.region,
+                                is_superuser=False,
+                                is_staff=False
+                                ).first()
+                        if not user :
+
+                            # if the user has already sent a subscription via other means but does not have a profile registered on the website
+                            if code2==76 or code2==77 or code2==79 or code2==75:  # here we set subscription to idbundle since user already has subscribed somehow using another mean
+                                if response2['idbundle'] == 1:
+                                    subscription = SubscriptionPlan.FREE
+                                    is_billed = False
+                                elif response2['idbundle'] == 2:
+                                    subscription = SubscriptionPlan.PAID1
+                                    is_billed = True
+                                elif response2['idbundle'] == 3:
+                                    subscription = SubscriptionPlan.PAID2
+                                    is_billed = True
+                                if not user:  # attempt to create a profile
+                                    if code2==77:
+                                        is_active=True
+                                        
+                                    else:
+                                        is_active=False
+                                    avatar = Avatar.objects.order_by('?').first()
+                                    user, created =  User.objects.get_or_create(
+                                            mobile = username,
+                                            defaults={
+                                                'is_superuser': False,
+                                                'first_name': '',
+                                                'last_name': '',
+                                                'email': '',
+                                                'is_active': is_active,
+                                                'is_staff': False,
+                                                'subscription': subscription,
+                                                'date_joined': datetime.now(),
+                                                'modified' : datetime.now(),
+                                                'newsletter_subscription': True,
+                                                'timezone': '',
+                                                'country': request.region.code,
+                                                'region_id': request.region.id,
+                                                'is_billed' : is_billed,
+                                                'password': 'pbkdf2_sha256$260000$aMwTW2Wr3K2J2WmodFFd5W$pZUAfNohO77wQbo4oRgMYybD8Vph9HdUSoeWOHkwT9w='
+                                            },
+                                        )
+                                    if created:
+                                        user.username= 'player'+str(user.id)
+                                        user.nickname= 'player'+str(user.id)
+                                        
+                                        if avatar :
+                                            user.avatar = avatar
+
+                                        user.save()
+                                    if is_active:
+                                        if 'refid' in request.session:
+                                            referr = User.objects.filter(id=request.session['refid']).first()
+                                            grant_referral_gift(user, referr)
+
+                                        @notify_when(events=[NotificationTemplate.LOGIN],
+                                                    is_route=False, is_one_time=False)
+                                        def notify(user, user_notifications):
+                                            """ extra logic if needed """
+                                        notify(user=user)
+                                        
+                                    request.session['msisdn'] = user.mobile
+                                    login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+                                    request.session['user_id'] = user.pk
+                                    # return redirect('/')
+                                    return Response({'message': response2}, status=514)
+                        else :
+                            user = UserModel.objects.get(
+                                mobile__iexact=username,
+                                region=request.region,
+                                is_superuser=False,
+                                is_staff=False
+                                )         
+                    else :
+                        user = UserModel.objects.get(
+                            username__iexact=username,
+                            region=request.region,
+                            is_superuser=False,
+                            is_staff=False
+                            )
+                except UserModel.DoesNotExist:
+                    raise exceptions.ValidationError({'error':'Invalid Mobile Number'})
+                if not user:
+                    raise exceptions.ValidationError({'error':'Invalid Mobile Number'})
+                if code2==76 or code2==79 or code2==75 or not user.is_active:
+                    print("user", user, "is not active redirect to wait page")
+                    login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+                    request.session['user_id'] = user.pk
+                    request.session['msisdn'] = user.mobile
+                    # return redirect('/wait')
+                    return Response({'message': response2}, status=514)
+                if user.is_active:
+                    @notify_when(events=[NotificationTemplate.LOGIN],
+                                is_route=False, is_one_time=False)
+                    def notify(user, user_notifications):
+                        """ extra logic if needed """
+                    notify(user=user)
+
+                login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+                request.session['msisdn'] = user.mobile
+                #return redirect('/')
+                return Response({}, status=status.HTTP_200_OK)
+            else:
+                if code2<100:
+                    code2+=400
+                return Response({'error': response2}, status=code2)
+
+        
     @action(methods=['POST'], detail=False)
     def register(self, request):
         
@@ -938,11 +1143,15 @@ class UserViewSet(mixins.ListModelMixin,
               read_only=True, default='Error in updating user subscription!'
            )
         })})
+    
     @action(['POST'], detail=False)  # , permission_classes=[permissions.IsAuthenticated]
     def update_user_substatus(self, request): 
+        print("****************request",str(request))
         serializer = self.get_serializer(data=request.data)
+        print(serializer)
         serializer.is_valid(raise_exception=True)
         msisdn = serializer.validated_data['msisdn']
+        aocid = serializer.validated_data['aocTransID']
         resp = {}
         is_billed = False
         refexist = False
@@ -951,11 +1160,14 @@ class UserViewSet(mixins.ListModelMixin,
         except:
             refid = None
         new_substatus = serializer.validated_data['new_substatus']
-        if new_substatus.lower() == SubscriptionPackages.PAID1:
-            subscription = SubscriptionPlan.PAID1
+        if new_substatus.lower() == SubscriptionPackages.DAILY:
+            subscription = SubscriptionPlan.DAILY
             is_billed = True
-        elif new_substatus.lower() == SubscriptionPackages.PAID2:
-            subscription = SubscriptionPlan.PAID2
+        elif new_substatus.lower() == SubscriptionPackages.WEEKLY:
+            subscription = SubscriptionPlan.WEEKLY
+            is_billed = True
+        elif new_substatus.lower() == SubscriptionPackages.MONTHLY:
+            subscription = SubscriptionPlan.MONTHLY
             is_billed = True
         else:
             subscription = SubscriptionPlan.FREE
@@ -965,6 +1177,23 @@ class UserViewSet(mixins.ListModelMixin,
         if str(ip) != TRUSTED_IP: # not ip.is_private:
             raise exceptions.PermissionDenied('Request not Allowed!')
         userexist = User.objects.filter(mobile=msisdn)
+        transidexist = User.objects.filter(aocTransID=aocid, subscription = '')
+
+        if transidexist:
+            num = transidexist.update(mobile = msisdn,subscription=subscription, is_billed=is_billed)
+            
+            num = 1
+            if num >0:
+                resp['message'] = 'User subscription has been successfully updated!'
+                resp['subscription'] = new_substatus
+                resp['aocTransID'] = aocid
+
+                return Response(resp, status=status.HTTP_200_OK)
+                #return redirect("/")
+            else:
+                # raise exceptions.APIException("Error in updating user subscription!")
+                return Response({'error': 'Error in updating user subscription!'}, status=473)
+            
         print("refid", refid)
         if subscription not in SubscriptionPlan.values:
             raise exceptions.ValidationError({'new_substatus':'The subscription plan provided is not valid!'})
@@ -1083,11 +1312,14 @@ class UserViewSet(mixins.ListModelMixin,
                         resp['refuid'] = refexist.first().uid
                         grant_referral_gift(userexist.first(), refexist.first())
                     return Response(resp, status=status.HTTP_200_OK)
+                    #return redirect("/")
                 else:
                     # raise exceptions.APIException("Error in updating user subscription!")
                     return Response({'error': 'Error in updating user subscription!'}, status=473)
 
         print("update_user_substatus is_authenticated",request.user.is_authenticated)
+
+                
     @swagger_auto_schema(responses={
         200: Schema(type=TYPE_OBJECT,
         properties={
@@ -1467,6 +1699,67 @@ class UserViewSet(mixins.ListModelMixin,
             redFlag = True                                        
         return Response({'redFlag':redFlag},status=status.HTTP_200_OK)
     
+    @action(['GET'], detail=True)
+    def registration_redirect(self, request,uid):  # default channel id is web
+        print("/////////////////registration_redirect registration_redirect")
+        amount = request.query_params.get('amount')
+        phone_number = request.query_params.get('phone_number')
+        subscriptionDuration = request.query_params.get('subscriptionDuration')
+        subscriptionName = request.query_params.get('subscriptionName')
+        subscriptionID = request.query_params.get('subscriptionID')
+        description = request.query_params.get('description')
+        command = '/api/token/generatetoken?phone_number='+phone_number+'&amount='+amount+'&subscriptionDuration='+subscriptionDuration+'&subscriptionName='+subscriptionName+'&subscriptionID='+subscriptionID+'&description='+description
+        data = {
+            'amount':amount,
+            'contactInfo':phone_number,
+            'subscriptionDuration':subscriptionDuration,
+            'subscriptionName':subscriptionName,
+            'subscriptionID':subscriptionID,
+            'description':description
+        }
+        url = REGISTRATION_REDIRECT_URL+command
+        print("////////////url",url)
+        try: 
+            api_call = requests.post(url, headers={}, json=data, timeout=3)
+        except requests.exceptions.RequestException as e:  # This is the correct syntax
+            # raise SystemExit(e)
+            print(e)
+            return 'Server error', 555
+        if api_call.status_code==200:
+            res = api_call.json()
+            aocTransID = res['aocTransID']
+            print("/////////////////////res",res)
+            user, created =  User.objects.get_or_create(
+                            aocTansID = aocTransID,
+                            defaults={
+                                'is_superuser': False,
+                                'first_name': '',
+                                'last_name': '',
+                                'email': '',
+                                'is_active': False,
+                                'is_staff': False,
+                                'subscription': 'pending',
+                                'date_joined': datetime.now(),
+                                'modified' : datetime.now(),
+                                'newsletter_subscription': True,
+                                'timezone': '',
+                                'country': request.region.code,
+                                'region_id': request.region.id,
+                                'is_billed' : False,
+                                'password': 'pbkdf2_sha256$260000$aMwTW2Wr3K2J2WmodFFd5W$pZUAfNohO77wQbo4oRgMYybD8Vph9HdUSoeWOHkwT9w='
+                            },
+                        )
+            if created:
+                transidexist = User.objects.filter(aocTransID=aocTransID, subscription = '')
+
+                if transidexist:
+                    transidexist.update(username = 'player'+str(user.id))
+
+                user.username= 'player'+str(user.id)
+                user.nickname= 'player'+str(user.id)
+            return Response({'aocToken':res['aocToken'],'aocTransID':res['aocTransID'],'userId':user.id})
+        
+    
     @action(['POST'], detail=True, permission_classes=[permissions.IsAuthenticated])
     def remove_friend(self, request, uid):
         instance = self.get_object()
@@ -1521,6 +1814,22 @@ class UserViewSet(mixins.ListModelMixin,
 
         return Response(status=status.HTTP_200_OK)
         #return exceptions.ValidationError('Functionality not yet available.')
+
+    @action(['POST'], detail=True, permission_classes=[permissions.IsAuthenticated])
+    def unsubscribe_api(self, request, uid):
+        user = request.user
+        print("user" + request.user.mobile)
+        #if user.subscription == SubscriptionPlan.FREE :
+        #user.subscription = SubscriptionPlan.PAID2
+        if (user.subscription == SubscriptionPlan.DAILY):
+            subscriptionId = 'ADBoxDaily'
+        elif (user.subscription == SubscriptionPlan.WEEKLY):
+            subscriptionId = 'ADBoxWeekly'
+        elif (user.subscription == SubscriptionPlan.MONTHLY):
+            subscriptionId = 'ADBoxMonthly'
+        unsubscribe_api(request.user.mobile, subscriptionId, referrer=None, vault=None)
+
+        return Response(status=status.HTTP_200_OK)
 
     @action(['POST'], detail=True, permission_classes=[permissions.IsAuthenticated])
     def add_new_friend(self, request, uid):
@@ -1643,6 +1952,27 @@ class UserViewSet(mixins.ListModelMixin,
         else:
             raise exceptions.ValidationError({'error':'Invalid arguments'})
             
+    @action(['POST'], detail=True, permission_classes=[permissions.IsAuthenticated])
+    def update_go_premium_flag(self, request, uid):
+        if 'msisdn' in request.session:
+            user = User.objects.filter(
+                mobile=request.session['msisdn']
+            ).first()
+            if user:
+                user.go_premium_sent = True
+                user.save()
+        else:
+            user = User.objects.filter(
+                uid=uid
+            ).first()
+            if user:
+                user.go_premium_sent = True
+                user.save()
+
+        
+
+        return Response(status=status.HTTP_200_OK)
+
 
 
 class FriendViewSet(mixins.ListModelMixin,
@@ -1778,7 +2108,7 @@ class FCMViewSet(mixins.ListModelMixin, viewsets.GenericViewSet, PaginationMixin
     def get_new_early_notifications(self, request):
         recent_notifications = UserNotification.objects.select_related(
             'notification'
-        ).get(
+        ).filter(
             user=request.user
         ).all().order_by('-created')
         serializer = self.get_serializer(recent_notifications, many=True)

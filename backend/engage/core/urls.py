@@ -26,6 +26,7 @@ urlpatterns = [
     path('clear', views.clear_session_view, name='clear'),
     path('newregister', views.new_register_view, name='new_register'),
     path('testregister', views.test_register_view, name='test_register'),
+    path('landingPage', views.landing_view, name='landingPage'),
     # firebase
     path('firebase-messaging-sw.js', views.firebase_sw_view),
     path('api/', include(router.urls)),

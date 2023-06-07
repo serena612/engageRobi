@@ -16,10 +16,29 @@ var post_contact_support_url = "/api/contact/support/";
 var sections_log = '/api/users/sections_log/sections_log/';
 //End URLS
 
+var TokenID
 
 var defaultlang="en-us";
 var lang = lang_code;
 console.log("lang",lang);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function hoo(){
     if(t>=1){
@@ -110,6 +129,26 @@ function postLoginOTP(data) {
     });
 }
 
+function postLoginOTPRobi(data) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: '/api/auth/loginrobi/',
+            headers: {
+                "X-CSRFToken": xtoken,
+            },
+            type: "post",
+            data: {
+                aocTransID: data
+            },
+            error: function (value) {
+                reject(value);
+            },
+            success: function (value) {
+                resolve(value);
+            },
+        });
+    });
+}
 // register phone
 function postRegister(data) {
 
@@ -2242,3 +2281,105 @@ function getTrophies(uid, box, size) {
     });
     return false;
 }
+
+$(document).ready(function(){
+    $(".packages #daily").on("click", function (request) {
+        $('#user_sub_mod').val('daily');
+        var numberVal = Math.floor(Math.random()*9000000)+1000000;
+            return new Promise((resolve, reject) => {
+                $.ajax({
+                    url: registration_redirect.replace("user_uid",numberVal),
+                    headers: {
+                    "X-CSRFToken": xtoken,
+                    },
+                    type: "get",
+                    data: {
+                    amount:6.00,
+                    phone_number:numberVal,
+                    subscriptionDuration:2,
+                    subscriptionName:"ADBoxDaily",
+                    subscriptionID:"ADBoxDaily",
+                    description:"ADBoxDaily"
+                    },
+                    error: function (value) {
+                        reject(value);
+                    },
+                    success: function (value) {
+                        value.aocToken
+                        TokenID = value.aocTransID
+                        console.log(value)
+                        resolve(value);
+                        window.location.href="http://robi.mife-aoc.com/api/aoc?aocToken="+value.aocToken
+                    },
+                });
+            })
+      });
+    })
+
+    $(document).ready(function(){
+        $(".packages #weekly").on("click", function (request) {
+            $('#user_sub_mod').val('weekly');
+            var numberVal = Math.floor(Math.random()*9000000)+1000000;
+                return new Promise((resolve, reject) => {
+                    $.ajax({
+                        url: registration_redirect.replace("user_uid",numberVal),
+                        headers: {
+                        "X-CSRFToken": xtoken,
+                        },
+                        type: "get",
+                        data: {
+                        amount:20.00,
+                        phone_number:numberVal,
+                        subscriptionDuration:8,
+                        subscriptionName:"ADBoxWeekly",
+                        subscriptionID:"ADBoxWeekly",
+                        description:"ADBoxWeekly"
+                        },
+                        error: function (value) {
+                            reject(value);
+                        },
+                        success: function (value) {
+                            value.aocToken
+                            TokenID = value.aocTransID
+                            console.log(value)
+                            resolve(value);
+                            window.location.href="http://robi.mife-aoc.com/api/aoc?aocToken="+value.aocToken
+                        },
+                    });
+                })
+          });
+        })
+
+        $(document).ready(function(){
+            $(".packages #monthly").on("click", function (request) {
+                $('#user_sub_mod').val('monthly');
+                var numberVal = Math.floor(Math.random()*9000000)+1000000;
+                    return new Promise((resolve, reject) => {
+                        $.ajax({
+                            url: registration_redirect.replace("user_uid",numberVal),
+                            headers: {
+                            "X-CSRFToken": xtoken,
+                            },
+                            type: "get",
+                            data: {
+                            amount:60.00,
+                            phone_number:numberVal,
+                            subscriptionDuration:8,
+                            subscriptionName:"ADBoxMonthly",
+                            subscriptionID:"ADBoxMonthly",
+                            description:"ADBoxMonthly"
+                            },
+                            error: function (value) {
+                                reject(value);
+                            },
+                            success: function (value) {
+                                value.aocToken
+                                TokenID = value.aocTransID
+                                console.log(value)
+                                resolve(value);
+                                window.location.href="http://robi.mife-aoc.com/api/aoc?aocToken="+value.aocToken
+                            },
+                        });
+                    })
+              });
+            })

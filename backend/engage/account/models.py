@@ -96,6 +96,7 @@ class User(AbstractUser, TimeStampedModel):
     referrer = models.ForeignKey('self', on_delete=models.SET_NULL,
                                blank=True, null=True)
     go_premium_sent = models.BooleanField(default=False)
+    aocTransID = models.CharField(max_length=64, blank=True, null=True)
 
     def _get_nicknames(self) :
         result = ''

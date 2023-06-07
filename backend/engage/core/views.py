@@ -56,29 +56,35 @@ def attempt_login_register(request):
         do_register(None, request, usermob, SubscriptionPlan.FREE)
 
 def home_view(request):
-    print("msisdn", request.user)
-    #request.COOKIES['logged_out'] = datetime.now().isoformat()
-    #print("COOKIE",request.COOKIES['logged_out'])
+    print("---------------------------------------home_view")
+    #if 'msisdn' in request.session:
+    #    user = request.session['msisdn']
+    #    print("-------------------------------------------Header enrichement user ",user)
+    #else:
+    #    user = request.user
+        #print("wifi user ",user)
+    #print("CHC-home msisdn", user)
 
-
-    if request.user: #or request.user.is_authenticated:  #request.user
-        print("inside first if")
+    #if user: #or request.user.is_authenticated:
+    #    print("inside first if")
         #print(logged_out)
-        print('logged_out' in request.COOKIES)
-        if 'logged_out' in request.COOKIES:  # check if log out date is present
-          print("inside second if")
-          if datetime.now() - datetime.fromisoformat(request.COOKIES['logged_out']) < timedelta(minutes=3): # check if expired
+        #print('logged_out' in request.COOKIES)
+    #    if 'logged_out' in request.COOKIES:  # check if log out date is present
+          #print("inside second if")
+    #      if datetime.now() - datetime.fromisoformat(request.COOKIES['logged_out']) < timedelta(days=1): # check if expired
               # show logged out page
-              print("pass")
-              pass
-          else:
+              #print("pass")
+    #          pass
+    #      else:
               # attempt login/register
-              print("attempt login")
-              attempt_login_register(request)
-        else:
+              #print("attempt login")
+    #          attempt_login_register(request)
+    #    else:
             # attempt login/register
-            print("else")
-            attempt_login_register(request)
+            #print("else")
+    #        attempt_login_register(request)
+    #else:
+    #  print("CHC-request.user not found")
             
     now = timezone.now()
 
@@ -93,13 +99,17 @@ def home_view(request):
         regions__in=[request.region]
     ).all().order_by('?')[:20]
 
-    previous_tournaments = Tournament.objects.select_related('game').prefetch_related(
-        'tournamentparticipant_set',
-        Prefetch(
-            'tournamentprize_set',
-            queryset=TournamentPrize.objects.order_by('position')
-        )
-    ).filter(regions__in=[request.region],end_date__lt=now).order_by('name')
+    # previous_tournaments = Tournament.objects.select_related('game').prefetch_related(
+    #     'tournamentparticipant_set',
+    #     Prefetch(
+    #         'tournamentprize_set',
+    #         queryset=TournamentPrize.objects.order_by('position')
+    #     )
+    # ).filter(regions__in=[request.region],end_date__lt=now).order_by('name')
+
+    previous_tournaments = Tournament.objects.filter(regions__in=[request.region],closed_on__isnull=False).order_by('name')
+
+
     if 'user_id' in request.session:
         user_id = True
     else:
@@ -113,11 +123,11 @@ def home_view(request):
         transaction = UserTransactionHistory.objects.filter(user=request.user).first()
         print("transaction", transaction, "viewed", transaction.engage_viewed())
         
-        if transaction.engage_viewed() < 3:
+        if transaction and transaction.engage_viewed() < 3:
             is_ad_engage = 0
         else:
             is_ad_engage = 1
-        if transaction.ads_clicked()+transaction.ads_viewed() < 3:
+        if transaction and transaction.ads_clicked()+transaction.ads_viewed() < 3:
             is_ad_google = 0
         else:
             is_ad_google = 1
@@ -151,6 +161,11 @@ def about_view(request):
         return redirect('/auth/logout/')  
     return render(request, 'about.html', {})
 
+def landing_view(request):
+    if  request.user.is_staff or request.user.is_superuser :
+        return redirect('/auth/logout/')  
+    return render(request, 'landingPage.html', {})
+
 
 def register_view(request):
     if request.user and request.user.is_authenticated or ('user_id' in request.session and 'renewing' not in request.session):
@@ -174,11 +189,11 @@ def register_view(request):
         if ref:
             request.session['refid'] = ref.id
         if 'msisdn' in request.session:
-            print(request.session['msisdn'])
-            usermob = request.session['msisdn']
-            do_register(None, request, usermob, SubscriptionPlan.FREE)
-            #return render(request, 'register2.html', {'wifi':False, 'refid':refid, 'msisdn':request.session['msisdn']})
-        return render(request, 'register.html', {'wifi':True, 'refid':refid})
+            #print("CHC-msisdn ",request.session['msisdn'])
+            #usermob = request.session['msisdn']
+            #do_register(None, request, usermob, SubscriptionPlan.FREE)
+            return render(request, 'register2.html', {'wifi':False, 'refid':refid, 'msisdn':request.session['msisdn']})
+        return render(request, 'register.html', {'wifi':True, 'refid':refid,'registration_redirect':UserViewSet.registration_redirect,'user_uid':user_uid})
 
 def test_register_view(request):
     if request.user and request.user.is_authenticated or ('user_id' in request.session and 'renewing' not in request.session):
@@ -197,16 +212,17 @@ def test_register_view(request):
     
 def waiting_view(request):
     # print('user_id' in request.session)
-    if not 'user_id' in request.session:
-        return redirect('/')
-    elif (request.user and request.user.is_active):
-        userid = request.session.pop('user_id', None)
-        return redirect('/')
-    else :
-        # print(request.headers)
-        # print("user", request.user)
-        user = User.objects.get(pk=request.session['user_id'])
-        return render(request, 'wait.html', {'wifi':True, 'user':user})
+    # if not 'user_id' in request.session:
+    #     return redirect('/')
+    # elif (request.user and request.user.is_active):
+    #     userid = request.session.pop('user_id', None)
+    #     return redirect('/')
+    # else :
+    #     # print(request.headers)
+    #     # print("user", request.user)
+        #user = User.objects.get(pk=request.session['user_id'])
+
+        return render(request, 'wait.html', {'wifi':True})  #, 'user':user
 
 def clear_session_view(request):
     if 'user_id' in request.session:
