@@ -41,8 +41,35 @@
            width: 58%;
         }
               
-       
+        .trapezoid {
+    border-bottom: 42px solid #1F1343;
+    border-left: 0px solid transparent;
+    border-right: 25px solid transparent;
+    height: 0;
+    width: 171px;
+    -webkit-transform: scaleY(-1);
+    transform: scaleY(-1);
+    margin-top: -3px;
+    margin-bottom: 35px;
+}
+  body{    background-image: url(/static/img/assets/pic2.png);
+    background-repeat: no-repeat;
+        background-position: right 0 bottom 235px;
+    background-size: contain;
+        }
+.trapezoid .winners-title{      -webkit-transform: scaleY(-1);
+    transform: scaleY(-1);
+    position: absolute;
+    top: -30px;
+    left: 12px;}
+            .sec-4{    padding-bottom: 73px;}  
+       .sec-3-1 > .row{background-image: url(/static/img/assets/red.png);    background-size: 100%;}
       
+        .slick-dotted.slick-slider {
+    padding-bottom: 30px;
+    margin-bottom:0;
+}
+        .sec-2{background-image: url(/static/img/assets/pic1.jpg); background-size: 100%;    background-position: 0 -54px;    background-repeat: no-repeat;}
        .sec-1{ width: 100%; overflow: hidden;background-position: left top!important; margin-top: -46px;height:auto!important; padding: 0;min-height:300px;}
         .home-btn-main{
             font-weight: bold;
@@ -143,7 +170,7 @@
                 <div class="col-md-6" style="margin-bottom: 40px;"> 
                     <div onclick="$('html, body').animate({ scrollTop: $('#tournaments').offset().top }, 2000);$('.tour-btn').click()" style="display: block;cursor:pointer;margin-top:7px;"><img src="/static/img/join-tournaments-english.png" style="width:100%" border="0" /></div> 
                  </div>
-                 <div class="col-md-6" style="margin-bottom: 40px;">
+                 <div class="col-md-6" style="margin-bottom: 40px;    margin-top: 8px;">
                      <div onclick="$('html, body').animate({ scrollTop: $('#tournaments').offset().top }, 2000);$('.games-btn').click()" style="display: block;cursor:pointer;"><img src="/static/img/play-hundred-english.png" style="width:100%" border="0" /></div> 
                  </div>
             </div>
@@ -225,17 +252,17 @@
    {% endif %}
     <section class="page-container featured-title"
              style="text-align: center; margin-top:60px; padding-bottom: 50px">
-        <!-- <h1 class='h1_home'>{% translate 'PLAY, WIN AND EARN COINS' %}</h3>     
-        <h3 class='h3_home'>{% translate 'PLAY ANY OF THE FEATURED GAMES' %}</h3> -->
-        <div class="text-center">
-            {% if lang_code == 'ar' %}
-            <img src="/static/img/arabic/Homepage-are-you-an-engager.png" id="are_you_engager" />
-            {% else %}
-            <img src="/static/img/Homepage-are-you-an-engager.png" id="are_you_engager" />
-            {% endif %}
-        </div>
-        <div class="text-center">
-            <img src="/static/img/whitePic.png" id="are_you_engager" style="margin-bottom: 16px;" />
+       
+        <div class="text-center" style="     height: 57px;
+    width: 100%;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    line-height: 58px;
+    background: #c50c0c;
+    max-width: 1368px;
+    margin: 0 auto;">
+            {% translate 'GAMES' %}
         </div>
         <div class="featured-games-parent"></div>
         <div class="featured-games max-page-width" id="main-featured-games">
@@ -311,7 +338,7 @@
                                class="button-small active upcoming">{% translate 'Upcoming' %}</a>
                         </li>
                         <li class="">
-                            <a onclick="hiya();return getTournaments('ongoing', this)" class="button-small ongoing">{% translate 'Ongoing' %}</a>
+                            <a onclick="hiya();return getTournaments('ongoing', this)" class="button-small ongoing">Ongoing</a>
                         </li>
                         <li style="margin-right: 48px;" class="">
                             <a onclick="hiya();return getTournaments('past', this)"
@@ -520,7 +547,7 @@
             <section class='sec-3-1'>
                 <div class='row'>
                     <div class='col col-4 home-winners'> 
-                    <h2 class="winners-title">{% translate 'WINNERS' %}</h2>
+                    <div class="trapezoid"><h2 class="winners-title">{% translate 'WINNERS' %}</h2></div>
                     <div class="drp_select">
                         <select class='drp_game'><option value="">{% translate 'Games Tournaments' %} </option>
                         {% for game in games %}
@@ -536,7 +563,7 @@
                         {% endif %}
                         {% endfor %}
                     </select>
-                    <div class="drp_select"><select class='drp_tournament' placeholder="{% translate 'Search for a tournament here' %}" >
+                    <div class="drp_select"><select class='drp_tournament' placeholder="Search for a tournament here" >
                         {% for tournament in previous_tournaments %}
                             {% if tournament.current_participants > 0 %}
                               <option value="{{tournament.id}}" date="{{ tournament.modified|date:"d M Y" }} {{tournament.modified|time:"h:i A"}}" label="{{tournament.label_next_time}}" game="{{tournament.game.slug}}"  gname="{{tournament.name}}" participants="{{tournament.current_participants}}/{{tournament.max_participants}}"> {{tournament.name}} </font></option>

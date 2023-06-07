@@ -64,6 +64,7 @@
             var is_complete_profile = false;
             var is_authenticated = false;
             var refid = '{{ refid }}';
+            var registration_redirect = "{% url 'user-registration-redirect' 'user_uid' %}"
             
         </script>
        
@@ -3140,6 +3141,7 @@ margin-top: 0px!important;
 }
 .fordesktop .sec-1 {
     overflow: visible!important;
+    background: #f3f3f3;
 }
 }
 
@@ -4564,7 +4566,8 @@ margin-top: 0px!important;
     display: block;
 }
 .select_pref {
-    color: #FF0095;
+    /* color: #FF0095; */
+    color:#C41733;
     margin-bottom: 35px;
     text-transform: uppercase;
     font-size: 30px;
@@ -6657,7 +6660,7 @@ or ((width:820px) and (height:1180px)) or ((width:768px) and (height:1024px))
             }
     
     
-            data.data.subscription = "free"; //$('.frmregister').find('select[name="subscription"]').val();
+            data.data.subscription = $('.frmregister').find('select[name="subscription"]').val();
 
             console.log('data subscription: '+data.data.subscription);
 
@@ -6677,27 +6680,27 @@ or ((width:820px) and (height:1180px)) or ((width:768px) and (height:1024px))
         }
 
         function gotoNext(){
-            var numberVal = $('.frmregister').find('input[name="phone_number"]').val();
-            if(numberVal.trim() == "" || !checkValidMtnNumber(numberVal))
-             {
-                $('.frmregister').find('input[name="phone_number"]').addClass('required');
-                $('.content_num').hide();
-                $('.content_num.contentA, .subNow_win').show();
+            // var numberVal = $('.frmregister').find('input[name="phone_number"]').val();
+            // if(numberVal.trim() == "" || !checkValidMtnNumber(numberVal))
+            //  {
+            //     $('.frmregister').find('input[name="phone_number"]').addClass('required');
+            //     $('.content_num').hide();
+            //     $('.content_num.contentA, .subNow_win').show();
                 
-                if(!checkValidMtnNumber(numberVal))
-                    $('.frmregister').find('.response-msg').html("{% translate'Please enter a valid MTN number (i.e 0xx xxx xxxxx or 234 xxx xxx xxxx)' %}").show();
-                else
-                    $('.frmregister').find('.response-msg').html('');
+            //     //if(!checkValidMtnNumber(numberVal))
+            //     //    $('.frmregister').find('.response-msg').html('Please enter a valid MTN number (i.e "0xx xxx xxxxx" or "234 xxx xxx xxxx")').show();
+            //     //else
+            //     //    $('.frmregister').find('.response-msg').html('');
 
-             }
-            else{
+            //  }
+            // else{
                 $('.frmregister').find('input[name="phone_number"]').removeClass('required');
                 $('.content_num, .subNow_win').hide();
                 $('.content_num.contentB').show();
-                $('.frmregister').find('.response-msg').html('');
+                //$('.frmregister').find('.response-msg').html('');
 
-                gotoThirdStep();
-            }
+                //gotoThirdStep();
+            // }
 
             // if(!checkValidMtnNumber(numberVal))
             //     $('.frmregister').find('.response-msg').html('Please enter a valid MTN number (i.e "0xx xxx xxxxx" or "234 xxx xxx xxxx")').show();
@@ -6706,6 +6709,8 @@ or ((width:820px) and (height:1180px)) or ((width:768px) and (height:1024px))
         }
 
         $(document).ready(function(){
+
+            gotoNext();
             $('select[name="subscription"]').on('change', function (e) { 
             var optionSelected = $("option:selected", this);
             var valueSelected = this.value; 
@@ -6738,30 +6743,36 @@ or ((width:820px) and (height:1180px)) or ((width:768px) and (height:1024px))
     </div>
     <img class="textpic"  src="/static/img/assets/africas-most-exciting.png"  />
     <img class="textpicmobi"  src="/static/img/assets/africas-most-exciting_text.png"  />
-</div>
+    
+</div> 
     <section class="sec-1">
         
         <form class="frmregister" method="post" name="frmregister"> 
             {% csrf_token %}
-            <div class="subNow_win"><img  src="/static/img/assets/desktop.png"  /></div>  
+            <!-- <div class="subNow_win"><img  src="/static/img/assets/desktop.png"  /></div>   -->
             <!-- <img  src="/static/img/assets/subscrive-and-win.png"  /> -->
             <div class="row row_1" style="display: block;">
                 
-                <div class="content_num contentA">
+                <!-- <div class="content_num contentA">
                     <input type="text" step="1" class="input1" 
                         name="phone_number"
                         placeholder="{% translate 'Enter MTN Number' %}" required/>
                 
                    <div class="btn_next_pink" id="go_next" onclick="gotoNext()">{% translate 'NEXT' %}</div>
-                </div>
-                
-                <div class="content_num contentB">
+                </div> -->
+            
+                <div class="content_num contentB choosesub">
                     <div class="select_pref">{% translate 'Select your subscription Preference' %}</div>
-                    <div class="option_box" onclick="$('#user_sub_mod').val('paid2'); gotoThirdStep();">
-                        <img src="/static/img/assets/n50.jpg" />
+                    <div class="option_box" id = "daily">
+                        <!-- <img src="/static/img/assets/n50.jpg" /> -->
+                        <img src="/static/img/assets/Landing-Page-Design-Daily.jpg" />
                     </div>
-                    <div class="option_box" onclick=" $('#user_sub_mod').val('free'); showFreeModal();">
-                        <img src="/static/img/assets/free.jpg" />
+                    <div class="option_box" id = "weekly" >
+                        <!--<img src="/static/img/assets/free.jpg" />-->
+                        <img src="/static/img/assets/Landing-Page-Design-Weekly.jpg" />
+                    </div>
+                    <div class="option_box" id = "monthly" >
+                        <img src="/static/img/assets/Landing-Page-Design-Monthly.jpg" />
                     </div>
                 </div>
 

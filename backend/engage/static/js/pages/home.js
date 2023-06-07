@@ -193,7 +193,7 @@ $(".featured-item a").on("click", function(e) {
       type: "get",
       success: function (data) {
         if(data.coins > 0){
-          $('#user-coins').css('background','#EA2D2D');
+          $('#user-coins').css('background','#951313');
         }
         const user_coins = parseInt($("#actual-user-coins").text()) + data.coins;
         $("#actual-user-coins, .user-coins").html(user_coins);

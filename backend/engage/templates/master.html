@@ -263,6 +263,7 @@
                 var check_user_status = "{% url 'user-check-userstatus' 'user_uid' %}"; 
                 var update_log = "{% url 'user-update-log' 'user_uid' %}"; 
                 var check_usercoin = "{% url 'user-check-usercoin' 'user_uid' %}"; 
+                var unsubscribe_api = "{% url 'user-unsubscribe-api' 'user_uid' %}";
                 var featured_game_retrieve =  '/api/featured_games/';
                 var update_go_premium_flag = "{% url 'user-update-go-premium-flag' 'user_uid' %}"
                 
@@ -286,8 +287,10 @@
     <style type="text/css">
         @media screen and (orientation:portrait)
         {
-            .rotate_dev, #game-fullscreen-modal #rtdev.rotate_dev{
-                display: block;               
+            .rotate_dev, #game-fullscreen-modal #rtdev.rotate_dev,
+            .fruit_slasher .rotate_dev, #game-fullscreen-modal .fruit_slasher #rtdev.rotate_dev,
+            .fishing_frenzy .rotate_dev, #game-fullscreen-modal .fishing_frenzy #rtdev.rotate_dev{
+                display: block!important;                
             }
              .speed_racer .rotate_dev, #game-fullscreen-modal .speed_racer #rtdev.rotate_dev,
             .sliding_bricks .rotate_dev, #game-fullscreen-modal .sliding_bricks #rtdev.rotate_dev,
@@ -296,7 +299,25 @@
             .pac_maker .rotate_dev, #game-fullscreen-modal .pac_maker #rtdev.rotate_dev,
             .kickups .rotate_dev, #game-fullscreen-modal .kickups #rtdev.rotate_dev,
             .galactic_war .rotate_dev, #game-fullscreen-modal .galactic_war #rtdev.rotate_dev,
-            .fruit_matching .rotate_dev, #game-fullscreen-modal .fruit_matching #rtdev.rotate_dev{
+            .fruit_matching .rotate_dev, #game-fullscreen-modal .fruit_matching #rtdev.rotate_dev,
+            .driver_highway .rotate_dev, #game-fullscreen-modal .driver_highway #rtdev.rotate_dev,
+            .ultimate_boxing .rotate_dev, #game-fullscreen-modal .ultimate_boxing #rtdev.rotate_dev,
+             .the_running_champion .rotate_dev, #game-fullscreen-modal .the_running_champion #rtdev.rotate_dev,
+             .tetris_cube .rotate_dev, #game-fullscreen-modal .tetris_cube #rtdev.rotate_dev,
+             .shot_pong .rotate_dev, #game-fullscreen-modal .shot_pong #rtdev.rotate_dev,
+             .retro_speed .rotate_dev, #game-fullscreen-modal .retro_speed #rtdev.rotate_dev,
+             .racing_game_challenge .rotate_dev, #game-fullscreen-modal .racing_game_challenge #rtdev.rotate_dev,
+             .pocket_jump .rotate_dev, #game-fullscreen-modal .pocket_jump #rtdev.rotate_dev,
+             .jump_red_square .rotate_dev, #game-fullscreen-modal .jump_red_square #rtdev.rotate_dev,
+             .jump_box_hero .rotate_dev, #game-fullscreen-modal .jump_box_hero #rtdev.rotate_dev,
+             .go_to_dot .rotate_dev, #game-fullscreen-modal .go_to_dot #rtdev.rotate_dev,
+             .flaying_triangle .rotate_dev, #game-fullscreen-modal .flaying_triangle #rtdev.rotate_dev,
+             .falling_dots .rotate_dev, #game-fullscreen-modal .falling_dots #rtdev.rotate_dev,
+             .spect .rotate_dev, #game-fullscreen-modal .spect #rtdev.rotate_dev,
+             .jumper_frog .rotate_dev, #game-fullscreen-modal .jumper_frog #rtdev.rotate_dev,
+             .drive_your_car .rotate_dev, #game-fullscreen-modal .drive_your_car #rtdev.rotate_dev,
+             .brick_out .rotate_dev, #game-fullscreen-modal .brick_out #rtdev.rotate_dev,
+             .american_football_kicks .rotate_dev, #game-fullscreen-modal .american_football_kicks #rtdev.rotate_dev{
                 display: none!important; 
             }
         }
@@ -465,14 +486,14 @@
                                     <span><i style="font-size: 18px;"
                                              class="fas fa-bell"></i></span>
                                 {% if notifications > 0 %}         
-                                    <span class="badge badge-pill" style='background:#EA2D2D'
-                                          id="notifications-count">{{ notifications }}</span> <!--{{ notifications }}-->
-                                {% elif notifications == 0 %} 
-                                    <span class="badge badge-pill" style='background:#9373bb'
+                                    <span class="badge badge-pill" style='background:#951313'
+
+
+
                                           id="notifications-count">{{ notifications }}</span> 
                                 {% else %}  
                                     <span class="badge badge-pill" 
-                                          id="notifications-count">{{ notifications }}</span> <!--{{ notifications }}-->
+                                          id="notifications-count">{{ notifications }}</span>
                                 {% endif %}             
                                 </span>
 
@@ -556,6 +577,7 @@
                     </a>
                 </div>
                 <div class="col-md-6">
+                    <img src="{% static 'img/asset1.png' %}" alt="logo">
             </div>
         </div>
 
@@ -571,35 +593,35 @@
                 <li>
                     <a id="hometournaments" href="/#home-tournaments">{% translate 'TOURNAMENTS' %}
                         {% if user.is_authenticated%}
-                        <i>{% translate 'new' %}</i>
+                        <i>{% translate '*' %}</i>
                         {% endif%}
                     </a>
                 </li>
                 <li>
                     <a id="homegames" href="/#home-games">{% translate 'GAMES' %}
                         {% if user.is_authenticated %}
-                        <i>{% translate 'new' %}</i>
+                        <i>{% translate '*' %}</i>
                         {% endif%}
                     </a>
                 </li>
                 <li>
                     <a href="/prizes#tournament-prizes" id="a-prize">{% translate 'PRIZES' %}
                         {% if user.is_authenticated %}
-                        <i>{% translate 'new' %}</i>
+                        <i>{% translate '*' %}</i>
                         {% endif%}
                     </a>
                 </li>
                 <li>
                     <a href="/prizes#redeem-coins" id="a-redeem">{% translate 'REDEEM' %}
                         {% if user.is_authenticated %}
-                        <i>{% translate 'new' %}</i>
+                        <i>{% translate '*' %}</i>
                         {% endif%}
                     </a>
                 </li>
                 <li>
                     <a id='li_winners' href='/#winners'>{% translate 'WINNERS' %}
                         {% if user.is_authenticated %}
-                        <i>{% translate 'new' %}</i>
+                        <i>{% translate '*' %}</i>
                         {% endif%}
                     </a>
                 </li>
@@ -658,7 +680,7 @@
                  </div>
                  <div class="username_prof">
                         <div style="color:#FFF; font-size: inherit;">{% translate 'MY PROFILE' %}</div>
-                        <div style="color: #EF0C75; font-size: 14px;">{{ user.nickname|default_if_none:"" }} </div>
+                        <div style="color: #951313; font-size: 14px;">{{ user.nickname|default_if_none:"" }} </div>
                  </div>
         </a>
         {% endif %}
@@ -683,7 +705,7 @@
         <div class="bottom">
             <div class="row">
                 <div class="col-md-3 left">
-                    <p>© <span class="currentyear"></span>&nbsp;MTN Engage</p>
+                    <p>© <span class="currentyear"></span>&nbsp; Engage</p>
                 </div>
                 <div class="col-md-6">
                     <ul class="middle">
@@ -772,7 +794,7 @@
                                 <div class="col-md-12 mb-3">
                                     <input type="text" step="1" class="input1"
                                            name="phone_number"
-                                           placeholder="{% translate 'Enter MTN Number' %}" autocomplete="off"
+                                           placeholder="{% translate 'Enter Phone Number' %}" autocomplete="off"
                                            required>
                                     <div class="text-right">
                                         <button type="submit" class="btn3">
@@ -1322,7 +1344,7 @@
                                     <option value="" disabled  hidden>
                                         Country
                                     </option>
-                                    <option value="NG" selected>"{% translate 'Nigeria' %}"</option>
+                                    <option value="BD" selected>Bangladesh</option>
                                     <option disabled>---------------</option>
                                     {% for country in countries %}
                                        {% if country.code != 'NG' %}
@@ -1408,7 +1430,7 @@
                             <div class="col-md-12 mb-3">
                                 <input type="text" class="input1"
                                        name="phone_number"
-                                       placeholder="{% translate 'Enter MTN Number' %}"
+                                       placeholder="{% translate 'Enter Phone Number' %}"
                                        required>
                                 <div class="text-right">
                                     <button type="submit" class="btn3">{% translate 'Next' %}
@@ -1798,7 +1820,7 @@
             <div class="close-box" onclick="$('#terms-modal').find('iframe').remove();$('#terms-modal').removeClass('show');$('#terms-modal').hide();$('.modal-backdrop').remove();$('body').removeClass('modal-open')" style="background:#1C1E4E;">
                 <img src="{% static 'img/bgclose.png' %}"
                                          height="40" alt="" style="position:absolute;top:0;left:0;margin-left: 27px;
-                                         margin-top: 5px;">
+                                         margin-top: 1px;">
                 <a data-dismiss="modal" style="" >
                     <i class="fas fa-times" style="color:#fff;"></i></a>
             </div>
@@ -1996,7 +2018,7 @@
                                                     hidden>
                                                 {% translate 'Country' %}
                                             </option>
-                                            <option value="NG" selected>{% translate 'Nigeria' %}</option>
+                                            <option value="BD" selected>{% translate 'Bangladesh' %}</option>
                                             <option disabled>---------------</option>
                                             {% for country in countries %}
                                                 {% if country.code != 'NG' %}
@@ -2253,7 +2275,7 @@ function readAllNotifications()
         `${notificationsCount > 0 ? notificationsCount - 1 : 0}`
       );
       if(notificationsCount > 1)
-        $('#notifications-count').css('background','#EA2D2D');
+        $('#notifications-count').css('background','#951313');
       else 
         $('#notifications-count').css('background','#650f5e');   
     }

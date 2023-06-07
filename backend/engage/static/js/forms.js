@@ -119,6 +119,53 @@ $(document).on("submit", ".login-form", function (e) {
     });
 })
 
+function postLogin(data) {
+
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: '/api/auth/verify_mobile/',
+            headers: {
+                "X-CSRFToken": xtoken,
+            },
+            type: "post",
+            data: {
+                phone_number: data.phone_number,
+                csrfmiddlewaretoken: data.csrfmiddlewaretoken
+            },
+            error: function (value) {
+                reject(value);
+            },
+            success: function (value) {
+                resolve(value);
+            },
+        });
+    });
+}
+
+function postLoginOTP(data) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: '/api/auth/login/',
+            headers: {
+                "X-CSRFToken": xtoken,
+            },
+            type: "post",
+            data: {
+                code: data.code,
+                mobile:data.mobile,
+                csrfmiddlewaretoken: data.csrfmiddlewaretoken
+            },
+            error: function (value) {
+                reject(value);
+            },
+            success: function (value) {
+                location.reload();
+                resolve(value);
+            },
+        });
+    });
+}
+
 
 //login otp form
 $(document).on("submit", ".login-otp-form", function (e) {
@@ -198,6 +245,54 @@ $(document).on("submit", ".login-otp-form", function (e) {
         setBtnLoading(btn, false);
     });
 })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //search array for specific values
 function in_array(value, array){
 	var index = array.indexOf(value);
@@ -290,7 +385,7 @@ function checkValidMtnNumber(number){
 					
 					valid=false;
 
-				}else if((checkArray >= 0) && (dialingCode === 234)){
+				}else if((checkArray >= 0) && (dialingCode === 880)){
 
 					valid=true;
 
@@ -307,7 +402,7 @@ function checkValidMtnNumber(number){
 
 				//get dialling code from mobile number - +234
 				dialingCode = phoneInputValue.slice(0,4);
-                if(dialingCode!="+234"){
+                if(dialingCode!="+880"){
                     dialingCode=phoneInputValue.slice(0,3);
                     var firstdigit =  Number(phoneInputValue.slice(3,4));
                     if(firstdigit==0){
@@ -343,7 +438,7 @@ function checkValidMtnNumber(number){
 				if(checkArray === false){
 					valid=false;
 				//if found in array
-				}else if((checkArray >= 0) && ((dialingCode === "+234") || (dialingCode === "234"))){
+				}else if((checkArray >= 0) && ((dialingCode === "+880") || (dialingCode === "880"))){
 					valid=true;
 				}else{
 					valid=false;
@@ -384,7 +479,7 @@ function checkValidMtnNumber(number){
         if(checkArray === false){
             valid=false;
         //if found in array
-        }else if((checkArray >= 0) && (dialingCode === "00234")){
+        }else if((checkArray >= 0) && (dialingCode === "00880")){
             valid=true;
         }else{
             valid=false;
@@ -430,7 +525,7 @@ $(document).on("submit", ".frmregister", function (e) {
        return;
    
     if(!checkValidMtnNumber($('input[name="phone_number"]').val())) {
-        //response_msg.html('Please enter a valid MTN number (i.e "0xx xxx xxxxx" or "234 xxx xxx xxxx")').show();
+        response_msg.html('Please enter a valid MTN number (i.e "0xx xxx xxxxx" or "234 xxx xxx xxxx")').show(); 
         response_msg.html(valid_number).show();
         return;
     }  
@@ -442,7 +537,7 @@ $(document).on("submit", ".frmregister", function (e) {
     if(data.data.phone_number!=undefined){
         var firststr = data.data.phone_number;
         if(data.data.phone_number.length == 11){ 
-            data.data.phone_number = '234'+data.data.phone_number.slice(1);
+            data.data.phone_number = '880'+data.data.phone_number.slice(1);
         }
         else if(data.data.phone_number.length == 14 && data.data.phone_number.indexOf('+')==0){ 
             data.data.phone_number = data.data.phone_number.slice(1);
@@ -466,7 +561,7 @@ $(document).on("submit", ".frmregister", function (e) {
 
     setBtnLoading(btn, true);
 
-    data.data.subscription = 'free';//$('#user_sub_mod').val();
+    data.data.subscription = $('#user_sub_mod').val();
     
     console.log("---aaa----");
     console.log(data.data);
@@ -513,7 +608,7 @@ $(document).on("submit", ".register-otp-form", function (e) {
     if(data.data.phone_number!=undefined){
         var firststr = data.data.phone_number;
         if(data.data.phone_number.length == 11){ 
-            data.data.phone_number = '234'+data.data.phone_number.slice(1);
+            data.data.phone_number = '880'+data.data.phone_number.slice(1);
         }
         else if(data.data.phone_number.length == 14 && data.data.phone_number.indexOf('+')==0){ 
             data.data.phone_number = data.data.phone_number.slice(1);
@@ -536,7 +631,7 @@ $(document).on("submit", ".register-otp-form", function (e) {
     }
     
     
-    data.data.subscription = 'free'; //$('#user_sub_mod').val();//$('.frmregister').find('select[name="subscription"]').val();
+    data.data.subscription = $('#user_sub_mod').val();//$('.frmregister').find('select[name="subscription"]').val();
     
     // if($('input[name="code"]').val()!="123456"){
     //     response_msg.html('Please enter a valid pincode!').show();
@@ -584,7 +679,7 @@ $(document).on("submit", ".frmregister.frm2", function (e) {
     
     data.data.refid = refid;
    
-    data.data.subscription = 'free'; //$('.frmregister2').find('select[name="subscription"]').val();
+    data.data.subscription = $('.frmregister2').find('select[name="subscription"]').val();
   
     response_msg.hide();
     var btn = form.find("button[type=submit]");
@@ -698,7 +793,7 @@ $(document).on("submit", "#send-coins-form", function (e) {
         $("#actual-user-coins, .user-coins").html(user_coins);
         response_msg.html("Coins are now transferred to your friend.").show();
         setTimeout(function(){ $("#send-coins").modal("hide");},3000);
-        $('#user-coins').css('background','#EA2D2D');
+        $('#user-coins').css('background','#951313');
     }).fail(function (ee) {
         response_msg.html("This amount exceeds your balance.").show();
         setBtnLoading(btn, false);

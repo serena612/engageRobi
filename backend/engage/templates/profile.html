@@ -72,7 +72,7 @@
                             <a href="#settings"
                                data-id="#choice-5"
                                class="badge badge-pill settings-btn is-with-side-friends"
-                               style="background: #A6076E;" >{% translate 'Settings' %}</a>
+                               style="background: #c50c0c;" >Settings</a>
                         </div>
                     </div>
                     <div class="det-right det-mobile"
@@ -570,6 +570,9 @@
                             <li>
                                 <hr>
                             </li>
+                            <li><a href="#unsub-modal"
+                                onclick="unsubscribe()">{% translate 'unsubscribe' %}</a></li>
+                            <li>
                             <li><a  class='logout' style='cursor:pointer' onclick=fn_logout("{% url 'logout' %}")>{% translate 'Logout' %}</a></li>
                             
                         </ul>
@@ -776,11 +779,11 @@
                         <div class="col-md-12 mb-3">
                             {% if user.is_authenticated %}
                             <input type="text" class="input1 share-link-input"
-                                   value="https://www.engageplaywin.com/register?referrer={{ user.uid }}"
+                                   value="http://engagerobi.devapp.co/register?referrer={{ user.uid }}"
                                    readonly>
                             {% else %}
                             <input type="text" class="input1 share-link-input"
-                                   value="https://www.engageplaywin.com/register"
+                                   value="http://engagerobi.devapp.co/register"
                                    readonly>
                             {% endif %}
                             <div class="text-right">

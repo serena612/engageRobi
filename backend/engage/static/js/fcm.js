@@ -17,6 +17,7 @@ $(function () {
 //   }
 // }
 
+
 function callOncePerDay(user) {
   var lastCalled = localStorage.getItem('lastCalled_'+ user );
   var now = new Date();
@@ -48,7 +49,12 @@ function callOncePerDay(user) {
   }
 }
 
+
 $(document).ready(function(){
+      logger.debug("This logs a debug message.")
+      logger.info("This logs an info message.")
+      logger.warn("This logs a warning message.")
+      logger.error("This logs an error message.")
       if (user_uid){
         callOncePerDay(user_uid);
         $(".li_go_premium,#go-premium-modal .btn_upgrade").on("click", function () {
@@ -142,7 +148,7 @@ $(document).ready(function(){
           `${notificationsCount > 0 ? notificationsCount - 1 : 0}`
         );
         if(notificationsCount > 1)
-          $('#notifications-count').css('background','#EA2D2D');
+          $('#notifications-count').css('background','#951313');
         else 
           $('#notifications-count').css('background','#650f5e');   
       }
@@ -157,7 +163,7 @@ $(document).ready(function(){
     //   $("#notifications-count").text(`${result.length}`);
 
     //   if (result.length >= 1) {
-    //     $('#notifications-count').css('background','#EA2D2D');
+    //     $('#notifications-count').css('background','#951313');
     //     // re-append the notifications
     //     //$("#notification-list").append(`
     //       //<li class="header-noti">
@@ -816,7 +822,7 @@ $(document).ready(function(){
     
     readAllNotifications();
     $(this).removeClass('new-notification').addClass('earlier-notification');
-    $('#notifications-count').css('background','#808080');
+    $('#notifications-count').css('background','#800080');
   });
   
   // on notification clicked
@@ -831,7 +837,7 @@ $(document).ready(function(){
         `${notificationsCount > 0 ? notificationsCount - 1 : 0}`
       );
       if(notificationsCount > 1)
-        $('#notifications-count').css('background','#EA2D2D');
+        $('#notifications-count').css('background','#951313');
       else 
         $('#notifications-count').css('background','#650f5e');   
     }
@@ -1152,7 +1158,7 @@ $(document).ready(function(){
             $("#notifications-count").text(`${allread.length}`);
             
             if (result.length >= 1) {
-              $('#notifications-count').css('background','#EA2D2D');
+          $('#notifications-count').css('background','#951313');
               // re-append the notifications
               //$("#notification-list").append(`
                 //<li class="header-noti">
@@ -1494,7 +1500,7 @@ $(document).ready(function(){
       //   $("#notifications-count").text(`${result.length}`);
 
       //   if (result.length >= 1) {
-      //     $('#notifications-count').css('background','#EA2D2D');
+      //     $('#notifications-count').css('background','#951313');
       //     // re-append the notifications
       //     $("#notification-list").append(`
       //       <li class="header-noti">
@@ -2128,7 +2134,7 @@ $(document).ready(function(){
                      // set notifications badge >> count
                      $("#notifications-count").text(`${result.length}`);
                       if(result.length > 0)
-                        $('#notifications-count').css('background','#EA2D2D');
+                        $('#notifications-count').css('background','#951313');
                       else
                         $('#notifications-count').css('background','#650f5e');
                      // reset the notifications list
@@ -2183,7 +2189,7 @@ $(document).ready(function(){
                      // set notifications badge >> count
                      $("#notifications-count").text(`${result.length}`);
                      if(result.length > 0)
-                      $('#notifications-count').css('background','#EA2D2D');
+                      $('#notifications-count').css('background','#951313');
                       else
                       $('#notifications-count').css('background','#650f5e');
                      // reset the notifications list
@@ -2292,7 +2298,7 @@ function myTimer() {
           var user_coins = parseInt($("#actual-user-coins").text());
           $("#actual-user-coins, .user-coins").text(value.coins);
           if(parseInt(gifted_coins) > 0){
-            $('#user-coins').css('background','#EA2D2D');
+            $('#user-coins').css('background','#951313');
           }
           // $("#actual-user-coins, .user-coins").text(
           //   `${
@@ -2371,7 +2377,7 @@ function myTimer() {
               if (value && value.status == "success") {
                 var user_coins = parseInt($("#actual-user-coins").text());
                 if(parseInt(gifted_coins) > 0){
-                  $('#user-coins').css('background','#EA2D2D');
+                  $('#user-coins').css('background','#951313');
                 }
                 $(".user-coins").text(
                   `${
@@ -2415,7 +2421,7 @@ function myTimer() {
             // set notifications badge >> count
             $("#notifications-count").text(`${result.length}`);
             if(result.length > 0)
-              $('#notifications-count').css('background','#EA2D2D');
+              $('#notifications-count').css('background','#951313');
             else
               $('#notifications-count').css('background','#650f5e');
             // reset the notifications list
@@ -2470,7 +2476,7 @@ function myTimer() {
             // set notifications badge >> count
             $("#notifications-count").text(`${result.length}`);
             if(result.length > 0)
-            $('#notifications-count').css('background','#EA2D2D');
+            $('#notifications-count').css('background','#951313');
             else
             $('#notifications-count').css('background','#650f5e');
             // reset the notifications list
@@ -2718,7 +2724,7 @@ function myTimer() {
         // set notifications badge >> count
         $("#notifications-count").text(`${result.length}`);
         if(result.length > 0)
-              $('#notifications-count').css('background','#EA2D2D');
+              $('#notifications-count').css('background','#951313');
         else
               $('#notifications-count').css('background','#650f5e');
         // reset the notifications list
