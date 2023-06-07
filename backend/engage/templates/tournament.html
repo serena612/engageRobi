@@ -5,20 +5,29 @@
 {% load big_number %}
 {% load call_method %}
 {% block javascript %}
+
     <script>
+
         var tournament_slug = '{{ tournament.slug }}'
         var pay_fee_url = "{% url 'orders-pay-fee' %}";
     </script>
     <script src="{% static 'js/pages/tournament.js' %}"></script>
     <script>
+        const timeZone = 'Africa/Lagos' //Intl.DateTimeFormat().resolvedOptions().timeZone; // replace with the time zone you want to check
          //var tournamentDate = '{{ tournament_started|date:"M d, Y" }} {{ tournament_started|time:"h:i:s" }}';
          var tournamentDate = '{{ tournament_closed|date:"M d, Y" }} {{ tournament_closed|time:"H:i:s" }}';
          var countDownDate = new Date(tournamentDate).getTime();
          // Run myfunc every second
-    var myfunc = setInterval(function() {
+       var myfunc = setInterval(function() {
 
-var now = new Date().getTime();
-var timeleft = countDownDate - now;
+       //var now = new Date();
+       //var timezoneOffset = now.getTimezoneOffset();
+       //var userDatetime = new Date(now.getTime() + (timezoneOffset * 60 * 1000));
+        
+        const now = new Date();
+        const targetDate = now.toLocaleString('en-US', { timeZone });
+        const timeInMs = new Date(targetDate).getTime();
+        var timeleft = countDownDate - timeInMs;
 
 // Calculating the days, hours, minutes and seconds left
 var days = Math.floor(timeleft / (1000 * 60 * 60 * 24));
@@ -102,13 +111,29 @@ if (timeleft < 0) {
                                     <p id="ctdays" ></p> <p id="cthours"></p> <p id="ctmins"></p> <p id="ctsecs"></p> <div style="clear:both"></div>
                                 </span>
 
-                                <div class="pull-left">/ {{ tournament_closed|date:"M d, Y" }} / {{ tournament_closed|time:"h:i A" }} 
+                           
+                            
+  
+
+
+
+
+                            
+                        {% else %}
+                            {% translate 'Tournament Started' %} / {{ tournament_started|date:"M d, Y" }} / {{ tournament_started|time:"h:i A" }} <span></span>  
+                        {% endif %}
+
+                        {% if tournament.state == 'upcoming' %}
+                       
+                        <div class="pull-left exceptcss">/ {{ tournament_closed|date:"M d, Y" }} / {{ tournament_closed|time:"h:i A" }} 
+
+
                                     {% if tournament.label_next_time %}
                                       <b> - {{tournament.label_next_time }}</b>
                                     {% endif %}
                                   </div>
-                        {% else %}
-                            {% translate 'Tournament Started' %} / {{ tournament_started|date:"M d, Y" }} / {{ tournament_started|time:"h:i A" }} <span></span>  
+
+
                         {% endif %}
 
                         
