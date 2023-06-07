@@ -1,0 +1,181 @@
+{% load i18n %}
+{% load static %}
+{% load big_number %}
+{% load countries %}
+{% load call_method %}
+{% load humanize %}
+{% get_countries as countries %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-C0XVDBF16H"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C0XVDBF16H');
+</script>
+    <link rel="icon" href="{% static 'img/favicon.png' %}">
+    {% block meta %}
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Engage App</title>
+    {% endblock %}
+    {% block stylesheets %}
+        <link rel="stylesheet" href="{% static 'libs/bs4/bootstrap.min.css' %}">
+        <link rel="stylesheet" id="maincssfile" href="{% static 'css/styles.css' %}?v=7">      
+
+
+    {% endblock %}
+
+    {% block scripts %}
+
+        <script type="application/javascript"
+                src="{% static 'libs/jquery-3.6.0.min.js' %}"></script>
+
+        <script type="application/javascript"
+                src="{% static 'libs/slick/slick.min.js' %}"></script>
+        <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
+        <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+        <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-messaging-compat.js"></script>
+        <script src="{% static 'libs/jquery.cookie.min.js' %}"></script>
+        <script type="text/javascript" language="javascript" src="{% static 'js/libphonenumber-js.min.js' %}"></script>
+        
+        <script>
+            var xtoken = $.cookie("csrftoken");
+          </script>
+          
+        <script type="application/javascript"
+        src="/static/js/fcm.js"></script>
+        
+        <script type="application/javascript"
+                src="{% static 'js/scripts.js' %}?v=6"></script>
+        <script type="application/javascript"
+                src="{% static 'js/forms.js' %}?v=6"></script>
+        <script type="application/javascript"
+                src="{% static 'js/api.js' %}?v=6"></script>
+        <script>
+            var registration_redirect = "{% url 'user-registration-redirect' 'user_uid' %}"
+            </script>
+                
+        
+    <style>
+        *{
+            text-align: center;
+        }
+        html, body{
+            background-image: none;
+            background-color: transparent;
+            color: #141414;
+        }
+        body{
+            font-size: 1rem;
+    text-transform: uppercase;
+    font-weight: 600;
+        }
+        .topSection {
+            font-size: 1.1rem;
+    padding-top: 23px;
+    padding-bottom: 23px;
+            font-weight: 600;
+    max-width: 98%;
+    margin: 0px auto;
+        }
+        .topSection p{
+            margin-bottom: 0px;
+        }
+       .topSection .title
+       {
+        color:#C41733;
+    font-size: 1.5rem;
+    font-weight: 600;
+       }
+       .top_landingPic
+       {
+        margin-bottom: 23px;
+       }
+       .package
+       {
+          width:75%;
+          margin: 0px auto 23px;
+       }
+       .package *
+       { 
+          margin-bottom:7px;
+       }
+       .package p
+       {
+          font-size: 0.8rem;
+       }
+       .red{
+          color:#C41733;
+       }
+       .btn3
+       {
+        background-color: #C41733;
+    color: white;
+    margin-bottom: 10px;
+    width: 100%;
+    text-align: center;
+    font-size: 1rem;
+    display: block;
+    padding: 12px;
+    height: auto;
+    border-radius: 10px;
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+       }
+    </style>
+   
+ {% endblock %}
+</head>
+
+<body>
+     
+ 
+   
+    <div class="contentPage">
+        <div class="topSection">
+             <div class="title">ENGAGE BILLING</div>
+             <p>To JOIN ANY TOURNAMENT</p>
+             <p>PLEASE SELECT ONE OF THE BELOW PACKAGES</p>
+        </div> 
+        <div class="top_landingPic">
+            <img src="{% static 'img/topLandingpic.PNG' %}" style="max-width:100%; max-height: 180px;" />
+        </div>
+        <div class="packages">
+             <div class="package">
+                 <div class="red">DAILY PACK</div>
+                 <button class="btn3" id = "btndaily">{% translate 'SUBSCRIBE' %}
+                </button>
+                <p>BDT 6.00(+VAT + SD + SC) (AUTO RENEWABLE)</p>
+             </div>
+             <div class="package">
+                <div class="red">WEEKLY PACK</div>
+                <button class="btn3" id = "btnweekly">{% translate 'SUBSCRIBE' %}
+               </button>
+               <p>BDT 20.00(+VAT + SD + SC) (AUTO RENEWABLE)</p>
+            </div>
+            <div class="package">
+                <div class="red">MONTHLY PACK</div>
+                <button class="btn3" id = "btnmonthly">{% translate 'SUBSCRIBE' %}
+               </button>
+               <p>BDT 60.00(+VAT + SD + SC) (AUTO RENEWABLE)</p>
+            </div>
+        </div>
+          
+    </div>
+  
+ 
+
+
+</body>
+</html>

@@ -21,13 +21,25 @@ src="{% static 'libs/slick/slick.min.js' %}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"
 integrity="sha512-3j3VU6WC5rPQB4Ld1jnLV7Kd5xr+cq9avvhwqzbH/taCRNURoeEpoPBK9pDyeukwSxwRPJ8fDgvYXd6SkaZ2TA=="
 crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+
+<script type="application/javascript"
+src="{% static 'libs/jquery-3.6.0.min.js' %}"></script>
+
 <script>
     var usermobile = '{{user.mobile}}';
     // var xtoken = $.cookie("csrftoken");
+    var aocTransID = '{{TokenID}}';
+    var is_authenticated = false;
+
 </script>
-<script type="application/javascript"
-                src="{% static 'js/wait.js' %}"></script>
+<!-- <script type="application/javascript"
+                src="{% static 'js/wait.js' %}"></script> -->
+<!-- <script type="application/javascript"
+                src="{% static 'js/api.js' %}"></script> -->
+
 </head>
+
+
 {% block content %}
 <div class="container h-100">
     <div class="row h-100 justify-content-center align-items-center">
@@ -39,12 +51,12 @@ crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
     <span class="is_updated">
         {% translate 'Subscription status is being updated please wait...' %}
 </span>
-<br>
+<!-- <br>
 <br>
 User: <span class="user_id">{{user.username}} </span> 
 <br/>
 Phone Number: <span class="user_mobile">{{user.mobile}}</span> <br> <a href="/clear">{% translate 'Change Number' %}</a>
-<br/>
+<br/> -->
 
 <!-- <p class="user_mobile">{{user.mobile}} <a href="/clear">Change Number</a> </p> -->
 

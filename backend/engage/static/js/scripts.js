@@ -602,6 +602,20 @@ function openEditProfileModal(event) {
      })
 }
 
+function unsubscribe() {
+        $.ajax({
+            url: unsubscribe_api,
+            headers: {
+                "X-CSRFToken": xtoken,
+            },
+            type: "post",
+            data: {},
+            error: function (value) {
+            },
+            success: function (value) {
+            }, 
+        }) 
+      }
 
 function openLiveModal(link){
     var modal = $('#live-modal');
@@ -1248,9 +1262,10 @@ function resetStar(obj){
         error: function (value) {
         },
         success: function (value) {
-          if(value.redFlag==true){$('#user-coins').css('background','#EA2D2D');}
-          else{ $('#user-coins').css('background','#650f5e');}
+          if(value.redFlag==true){$('#user-coins').css('background','#951313');}
+          else{ $('#user-coins').css('background','#951313');}
           
         }, 
     }) 
   }
+
