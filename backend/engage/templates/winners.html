@@ -1,0 +1,110 @@
+{% extends 'master.html' %}
+{% load i18n %}
+{% load static %}
+{% load humanize %}
+
+{% block javascript %}
+    <script>
+        var redeem_package_url = "{% url 'orders-redeem-package' %}";
+        var buy_coins_url = "{% url 'orders-buy-coins' %}";
+    </script>
+    <script src="{% static 'js/selectize.min.js' %}" ></script>
+    <link rel="stylesheet" href="{% static 'css/selectize.bootstrap3.min.css' %}"  />
+    <script src="{% static 'js/pages/winners.js' %}?v=6"></script>
+    
+
+    <style>
+        @media (max-width:768px)
+        {
+            .img-header img
+            {
+                margin-top: 47px;
+            }
+        }
+
+        .trapezoid {
+    border-bottom: 42px solid #1F1343;
+    border-left: 0px solid transparent;
+    border-right: 25px solid transparent;
+    height: 0;
+    width: 171px;
+    -webkit-transform: scaleY(-1);
+    transform: scaleY(-1);
+    margin-top: -3px;
+    margin-bottom: 35px;
+}
+.trapezoid .winners-title{      -webkit-transform: scaleY(-1);
+    transform: scaleY(-1);
+    position: absolute;
+    top: -30px;
+    left: 12px;}
+            .sec-4{    padding-bottom: 73px;}  
+       .sec-3-1 > .row{background-image: url(/static/img/assets/red.png);    background-size: 100%;}
+      
+        .slick-dotted.slick-slider {
+    padding-bottom: 30px;
+    margin-bottom:0;
+}
+    </style>
+{% endblock %}
+
+{% block top_section %}
+    <div class="img-header">
+        <img class="hide-mobile" src="{% static 'img/prize-header.jpg' %}"
+             alt="">
+        <img class="show-mobile"
+             src="{% static 'img/mobile-prizes-header.jpg' %}" alt="">
+    </div>
+{% endblock %}
+
+{% block content %}
+    <section class='sec-3-1'>
+        <div class='row'>
+            <div class='col col-4 home-winners'> 
+            <div class="trapezoid"><h2 class="winners-title">{% translate 'WINNERS' %}</h2></div>
+            <div class="drp_select">
+                <select class='drp_game'><option value="">{% translate 'Games Tournaments' %} </option>
+                {% for game in games %}
+                    <option value="{{ game.slug }}">{{game.name}} </option>
+                {% endfor %}
+                </select>
+                <i class="fas fa-angle-down"></i>
+            </div>
+            <select class='hiddenTournament_select' style='display:none;'>
+                {% for tournament in previous_tournaments %}
+                <option value="{{tournament.id}}" date="{{ tournament.modified|date:"d M Y" }} {{tournament.modified|time:"h:i A"}}" label="{{tournament.label_next_time}}"  game="{{tournament.game.slug}}"  gname="{{tournament.name}}" > {{tournament.name}} </font></option>
+
+
+                {% endfor %}
+            </select>
+            <div class="drp_select"><select class='drp_tournament' placeholder="Search for a tournament here" >
+                {% for tournament in previous_tournaments %}
+                    <option value="{{tournament.id}}" date="{{ tournament.modified|date:"d M Y" }} {{tournament.modified|time:"h:i A"}}" label="{{tournament.label_next_time}}" game="{{tournament.game.slug}}"  gname="{{tournament.name}}" > {{tournament.name}} </font></option>
+
+
+                {% endfor %}</select>
+                <i class='fas fa-angle-down'></i>
+            </div>
+            <div class='date winners-date'><div class='winners-date-updated'>{% translate 'Last Updated:' %} </div> <span></span></div>
+            </div>
+            <div class='col col-8 home-winners-results'>
+                <h2 class='home-winners-results-title'></h2>
+                <div class='container'>
+                    <div class='scroll_wrapper'>
+                        <div class='package'>
+                            
+                        </div>
+                        <div class='package'>
+                        
+                        </div>   
+                            
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+    </div>
+
+    </section>
+{% endblock %}

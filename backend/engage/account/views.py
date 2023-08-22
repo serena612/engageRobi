@@ -25,6 +25,11 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 from engage.settings.base import SHOWADS
 from datetime import datetime
+from engage.core.models import Game, FeaturedGame, Event
+from engage.tournament.models import Tournament, TournamentPrize
+from django.db.models import F, Q,Prefetch
+from engage.operator.models import OperatorAd
+from engage.account.models import UserTransactionHistory
 
 def public_profile_view(request, uid):
     try:
@@ -132,7 +137,7 @@ def login_view(request):
     except User.DoesNotExist:
         return redirect('/')
 
-    #login(request, user)
+    login(request, user)
     
     user.last_login = timezone.now()
     user.save()
@@ -206,6 +211,79 @@ def prizes_view(request):
         'purchase_coins': purchase_coins,
         'redeem_packages': redeem_packages
     })
+
+def winners_view(request):
+    if request.user.is_staff or request.user.is_superuser :
+        return redirect('/auth/logout/')  
+    # now = timezone.now()
+    # games = Game.objects.all()
+    # previous_tournaments = Tournament.objects.select_related('game').prefetch_related(
+    #     'tournamentparticipant_set',
+    #     Prefetch(
+    #         'tournamentprize_set',
+    #         queryset=TournamentPrize.objects.order_by('position')
+    #     )
+    # ).filter(regions__in=[request.region],end_date__lt=now).order_by('name')
+
+    # return render(request, 'winners.html', {'games': games,
+    #                                       'previous_tournaments':previous_tournaments })
+    now = timezone.now()
+
+    featured_games = FeaturedGame.objects.all()
+    games = Game.objects.all()
+    ad = OperatorAd.objects.filter(
+        (Q(start_date__gte=now) & Q(end_date__lte=now)) |
+        (Q(start_date__isnull=True) & Q(end_date__isnull=True)),
+        regions__in=[request.region]
+    ).order_by('?').first()
+    events = Event.objects.filter(
+        regions__in=[request.region]
+    ).all().order_by('?')[:20]
+
+    previous_tournaments = Tournament.objects.select_related('game').prefetch_related(
+        'tournamentparticipant_set',
+        Prefetch(
+            'tournamentprize_set',
+            queryset=TournamentPrize.objects.order_by('position')
+        )
+    ).filter(regions__in=[request.region],end_date__lt=now).order_by('name')
+    if 'user_id' in request.session:
+        user_id = True
+    else:
+        user_id = False
+    if request.user and request.user.is_authenticated :
+        user_uid = request.user.uid
+    else:
+        user_uid = ""
+
+    if request.user.is_authenticated :
+        transaction = UserTransactionHistory.objects.filter(user=request.user).first()
+        print("transaction", transaction, "viewed", transaction.engage_viewed())
+        
+        if transaction.engage_viewed() < 3:
+            is_ad_engage = 0
+        else:
+            is_ad_engage = 1
+        if transaction.ads_clicked()+transaction.ads_viewed() < 3:
+            is_ad_google = 0
+        else:
+            is_ad_google = 1
+    
+    else:
+        is_ad_engage = 1
+        is_ad_google = 1
+
+
+    return render(request, 'winners.html', {'featured_games': featured_games,
+                                          'games': games,
+                                          'ad': ad,
+                                          'events': events,
+                                          'previous_tournaments':previous_tournaments,
+                                          'user_id': user_id,
+                                          'show_ads': SHOWADS,
+                                          'user_uid': user_uid,
+                                          'is_ad_google': is_ad_google,
+                                          'is_ad_engage':is_ad_engage})
 
 
 def view_404(request, exception=None):

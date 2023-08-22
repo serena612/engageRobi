@@ -95,7 +95,7 @@
                     <ul class="tabs">
                         <li><a href="#profile"
                                class="link-item is-with-side-friends active"
-                               data-id="#choice-1">{% translate 'Profile' %}</a>
+                               data-id="#choice-1">{% translate 'Edit Profile' %}</a>
                         </li>
                         <li>
                             <a href="#friends" class="link-item view_all_friends"
@@ -105,8 +105,8 @@
                         <li><a href="#tournaments"
                                class="link-item is-with-side-friends"
                                data-id="#choice-3">{% translate 'Tournaments' %}</a></li>
-                        {% comment %} <li><a href="#missions" class="link-item"
-                               data-id="#choice-4">{% translate 'Missions' %}</a></li> {% endcomment %}
+                        <li><a href="#missions" class="link-item"
+                               data-id="#choice-4">{% translate 'Missions' %}</a></li>
                     </ul>
                 </div>
             </div>
@@ -779,11 +779,11 @@
                         <div class="col-md-12 mb-3">
                             {% if user.is_authenticated %}
                             <input type="text" class="input1 share-link-input"
-                                   value="http://engagerobi.devapp.co/register?referrer={{ user.uid }}"
+                                   value="http://engagewinner.com/register?referrer={{ user.uid }}"
                                    readonly>
                             {% else %}
                             <input type="text" class="input1 share-link-input"
-                                   value="http://engagerobi.devapp.co/register"
+                                   value="http://engagewinner.com/register"
                                    readonly>
                             {% endif %}
                             <div class="text-right">
@@ -792,9 +792,9 @@
                                     {% translate 'COPY' %}
                                 </button>
                                 {% if user.is_authenticated %}
-                                <!-- ShareThis BEGIN --><div class="sharethis-inline-share-buttons" data-url="https://www.engageplaywin.com/register?referrer={{ user_uid }}"></div><!-- ShareThis END -->
+                                <!-- ShareThis BEGIN --><div class="sharethis-inline-share-buttons" data-url="https://www.engagewinner.com/register?referrer={{ user_uid }}"></div><!-- ShareThis END -->
                                 {% else %}
-                                <!-- ShareThis BEGIN --><div class="sharethis-inline-share-buttons" data-url="https://www.engageplaywin.com/register"></div><!-- ShareThis END -->
+                                <!-- ShareThis BEGIN --><div class="sharethis-inline-share-buttons" data-url="https://www.engagewinner.com/register"></div><!-- ShareThis END -->
                                 {% endif %}
                             </div>
                         </div>

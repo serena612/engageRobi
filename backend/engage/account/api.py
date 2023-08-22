@@ -17,7 +17,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework import permissions
-from engage.operator.models import RedeemPackage
+from engage.operator.models import RedeemPackage, SubConfiguration
 from uuid import uuid4
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg.openapi import Schema, TYPE_ARRAY, TYPE_OBJECT, TYPE_STRING
@@ -634,6 +634,8 @@ class AuthViewSet(viewsets.GenericViewSet):
                 if code < 100:
                     code += 400
                 return Response({'error': response}, status=code)
+
+            
         else:  # do you want to login if none ? here we assume yes
             return Response({}, status=status.HTTP_200_OK)
     
@@ -669,9 +671,8 @@ class AuthViewSet(viewsets.GenericViewSet):
                 code += 400
             return Response({'error': response}, status=code)
 
-
     @action(methods=['POST'], detail=False)
-    def login(self, request):
+    def loginOld(self, request):
         username = request.POST.get('mobile')
         # get real mobile if it is username
         try:
@@ -688,13 +689,11 @@ class AuthViewSet(viewsets.GenericViewSet):
         
         otp = request.POST.get('code')
         if usermob:
-            logger.info('verify_pincode request', usermob,otp)
             response, code = verify_pincode(usermob, otp, vault=self.client)  # what if he is registered on api but not here and loaddata check if pendingsub
-            logger.info('verify_pincode request',response, code)
+            
         if (usermob and code==0) or username in USER_EXCEPTION_LIST or INTEGRATION_DISABLED or usermob.startswith('234102') or DISABLE_PIN:
-            logger.info('load_data_api request', usermob)
+           
             response2, code2 = load_data_api(usermob, "1", self.client)  # 1 for wifi
-            logger.info('load_data_api response', usermob,response2, code2)
             
             if code2==56 or code2==75 or code2==76 or code2==77 or code2==79 or username in USER_EXCEPTION_LIST or INTEGRATION_DISABLED or usermob.startswith('234102'):  # 56 profile does not exist - 76 pending sub - 77 pending unsub - 79 sub
                 
@@ -833,6 +832,157 @@ class AuthViewSet(viewsets.GenericViewSet):
             if code<100:
                 code+=400
             return Response({'error': response}, status=code)
+        
+
+    @action(methods=['POST'], detail=False)
+    def login(self, request):
+        username = request.POST.get('mobile')
+        # get real mobile if it is username
+        try:
+            user = UserModel.objects.filter(
+                username__iexact=username,
+                region=request.region
+            ).first()
+            if user:
+                usermob = str(user.mobile)
+            else:
+                usermob = username
+        except UserModel.DoesNotExist:
+            usermob = username
+        
+        otp = request.POST.get('code')
+        # if usermob:
+        #     response, code = verify_pincode(usermob, otp, vault=self.client)  # what if he is registered on api but not here and loaddata check if pendingsub
+            
+        if (usermob) or username in USER_EXCEPTION_LIST or INTEGRATION_DISABLED or usermob.startswith('234102') or DISABLE_PIN:
+           
+            response2, code2 = load_data_api(usermob, "1", self.client)  # 1 for wifi
+            
+            if code2==56 or code2==75 or code2==76 or code2==77 or code2==79 or username in USER_EXCEPTION_LIST or INTEGRATION_DISABLED or usermob.startswith('234102'):  # 56 profile does not exist - 76 pending sub - 77 pending unsub - 79 sub
+                
+                try:
+                    user = UserModel.objects.filter(
+                        username__iexact=username,
+                        region=request.region,
+                        is_superuser=False,
+                        is_staff=False
+                    ).first()
+                    if not user :
+                        user = UserModel.objects.filter(
+                                mobile__iexact=username,
+                                region=request.region,
+                                is_superuser=False,
+                                is_staff=False
+                                ).first()
+                        if not user :
+                            # if the user has already sent a subscription via other means but does not have a profile registered on the website
+                            if code2==76 or code2==77 or code2==79 or code2==75:  # here we set subscription to idbundle since user already has subscribed somehow using another mean
+                                if response2['idbundle'] == 1:
+                                    subscription = SubscriptionPlan.FREE
+                                    is_billed = False
+                                elif response2['idbundle'] == 2:
+                                    subscription = SubscriptionPlan.PAID1
+                                    is_billed = True
+                                elif response2['idbundle'] == 3:
+                                    subscription = SubscriptionPlan.PAID2
+                                    is_billed = True
+                                if not user:  # attempt to create a profile
+                                    if code2==77:
+                                        is_active=True
+                                        
+                                    else:
+                                        is_active=False
+                                    avatar = Avatar.objects.order_by('?').first()
+                                    user, created =  User.objects.get_or_create(
+                                            mobile = username,
+                                            defaults={
+                                                'is_superuser': False,
+                                                'first_name': '',
+                                                'last_name': '',
+                                                'email': '',
+                                                'is_active': is_active,
+                                                'is_staff': False,
+                                                'subscription': subscription,
+                                                'date_joined': datetime.now(),
+                                                'modified' : datetime.now(),
+                                                'newsletter_subscription': True,
+                                                'timezone': '',
+                                                'country': request.region.code,
+                                                'region_id': request.region.id,
+                                                'is_billed' : is_billed,
+                                                'password': 'pbkdf2_sha256$260000$aMwTW2Wr3K2J2WmodFFd5W$pZUAfNohO77wQbo4oRgMYybD8Vph9HdUSoeWOHkwT9w='
+                                            },
+                                        )
+                                    if created:
+                                        user.username= 'player'+str(user.id)
+                                        user.nickname= 'player'+str(user.id)
+                                        
+                                        if avatar :
+                                            user.avatar = avatar
+
+                                        user.save()
+                                    if is_active:
+                                        if 'refid' in request.session:
+                                            referr = User.objects.filter(id=request.session['refid']).first()
+                                            grant_referral_gift(user, referr)
+
+                                        @notify_when(events=[NotificationTemplate.LOGIN],
+                                                    is_route=False, is_one_time=False)
+                                        def notify(user, user_notifications):
+                                            """ extra logic if needed """
+                                        notify(user=user)
+                                        
+                                    request.session['msisdn'] = user.mobile
+                                    login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+                                    request.session['user_id'] = user.pk
+                                    # return redirect('/')
+                                    return Response({'message': response2}, status=514)
+                        else :
+                            user = UserModel.objects.get(
+                                mobile__iexact=username,
+                                region=request.region,
+                                is_superuser=False,
+                                is_staff=False
+                                )         
+                    else :
+                        user = UserModel.objects.get(
+                            username__iexact=username,
+                            region=request.region,
+                            is_superuser=False,
+                            is_staff=False
+                            )
+                except UserModel.DoesNotExist:
+                    raise exceptions.ValidationError({'error':'Invalid Mobile Number'})
+                if not user:
+                    raise exceptions.ValidationError({'error':'Invalid Mobile Number'})
+                if code2==76 or code2==79 or code2==75 or not user.is_active:
+                    print("user", user, "is not active redirect to wait page")
+                    login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+                    request.session['user_id'] = user.pk
+                    request.session['msisdn'] = user.mobile
+                    # return redirect('/wait')
+                    return Response({'message': response2}, status=514)
+                if user.is_active:
+                    @notify_when(events=[NotificationTemplate.LOGIN],
+                                is_route=False, is_one_time=False)
+                    def notify(user, user_notifications):
+                        """ extra logic if needed """
+                    notify(user=user)
+
+                login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+                request.session['msisdn'] = user.mobile
+                if user.is_billed == True:
+                    return redirect('/')
+                else:
+                    return redirect('/register')
+            else:
+                if code2<100:
+                    code2+=400
+                return Response({'error': response2}, status=code2)
+        else:
+            if code<100:
+                code+=400
+            return Response({'error': 'error'}, status=code)
 
 
     @action(methods=['POST'], detail=False)
@@ -1060,6 +1210,8 @@ class UserViewSet(mixins.ListModelMixin,
             return serializers.RemoveSubscriptionSerializer
         elif self.action == 'disable_user_subscription':
             return serializers.DisableSubscriptionSerializer
+        elif self.action == 'expiry_on_renewal':
+            return serializers.ExpiryOnRenewalSerializer
         return serializers.UserSerializer
 
     @action(['POST'], detail=False, permission_classes=[permissions.IsAuthenticated])
@@ -1448,7 +1600,7 @@ class UserViewSet(mixins.ListModelMixin,
         elif not userexist.first().is_billed:
             return Response({'error': 'User\'s subscription is already disabled!'}, status=474)
         else:
-            num = userexist.update(is_billed=False,subscription='free')
+            num = userexist.update(is_billed=False ,subscription='free')
             if num >0:
                 resp['message'] = 'User subscription has been successfully disabled!'
                 resp['username'] = userexist.first().username
@@ -1456,6 +1608,31 @@ class UserViewSet(mixins.ListModelMixin,
             else:
                 return Response({'error': 'Error in disabling user subscription!'}, status=475)
   
+    @action(['POST'], detail=False)  # , permission_classes=[permissions.IsAuthenticated]
+    def expiry_on_renewal(self, request): 
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        msisdn = serializer.validated_data['msisdn']
+        resp = {}
+        # print(request.META.get('HTTP_X_FORWARDED_FOR'))
+        ip = ip_address(request.META.get('HTTP_X_FORWARDED_FOR').split(",")[0])
+        print(ip, str(ip)!=TRUSTED_IP)
+        if str(ip) != TRUSTED_IP: # not ip.is_private:
+            raise exceptions.PermissionDenied('Request not Allowed!')
+        userexist = User.objects.filter(mobile=msisdn)
+        if not userexist:
+            raise exceptions.ValidationError({'msisdn': 'No User exists with the number '+ msisdn})
+        elif not userexist.first().is_billed:
+            return Response({'error': 'User\'s subscription is already disabled!'}, status=474)
+        else:
+            num = userexist.update(is_billed=False)
+            if num >0:
+                resp['message'] = 'User subscription has been successfully disabled!'
+                resp['username'] = userexist.first().username
+                return Response(resp, status=status.HTTP_200_OK)
+            else:
+                return Response({'error': 'Error in disabling user subscription!'}, status=475)
+                
 
     @action(['GET'], detail=True)
     def friends(self, request, uid):

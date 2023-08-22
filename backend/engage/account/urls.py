@@ -66,6 +66,7 @@ urlpatterns = [
     path('profile/<uuid:uid>', views.public_profile_view, name='public-profile'),
     path('profile/set-game-account/', views.set_game_linked_account,name='set-game-account'),
     path('prizes/', views.prizes_view, name='prizes'),
+    path('winners/', views.winners_view, name='winners'),
     path('admin/logout/', auth_views.LogoutView.as_view(
     next_page=reverse_lazy('admin:login') # you can use your named URL here just like you use the **url** tag in your django template
     ), name='logout2'),

@@ -331,7 +331,7 @@ function fillTopUpcomingTournaments(data){
                 html+=`<div class='label'>${state}</div>`;
                 if(state==ongoing && item.live_link){
                     html+=`<i class='fa fa-eye'></i>
-                           <a class='watch_live' onclick=openLiveModal('${item.live_link}')>WATCH LIVE NOW</a>`;
+                           <a class='watch_live' onclick=openLiveWindow('${item.live_link}')>WATCH LIVE NOW</a>`;
                 }
                 
                 
@@ -355,6 +355,12 @@ function load (pg) {
         
         var box = $(".tournaments-list");
         var box_mobile = $(".tournaments-list1 .list");
+        var content = $(".tournaments-list1");
+        content.html("");
+        content.addClass("is-loading");
+        content.append(
+            "<li class='loading-item'><img class='loading-img white' src='/static/img/loading1.gif' /></li>"
+        );
         box_mobile.html("");
         box.html("");
         box.addClass("is-loading");
@@ -378,7 +384,9 @@ function load (pg) {
             success: function (data) {
                 box.html("");
                 box.removeClass("is-loading");
+                content.removeClass("is-loading");
                 box.find('.loading-item').remove();
+                content.find('.loading-item').remove();
 
                
               
@@ -492,7 +500,7 @@ function load (pg) {
                                 html+=`<div class='label'>${state}</div>`;
                                 if(state=='ongoing' && item.live_link){
                                     html+=`<i class='fa fa-eye'></i>
-                                        <a class='watch_live' onclick=openLiveModal('${item.live_link}')>WATCH LIVE NOW</a>`;
+                                        <a class='watch_live' onclick=openLiveWindow('${item.live_link}')>WATCH LIVE NOW</a>`;
                                 }
                                 
                                 if(state=='upcoming'){
@@ -616,7 +624,7 @@ function load (pg) {
                                 html+=`<div class='label'>${state}</div>`;
                                 if(state=='ongoing' && item.live_link){
                                     html+=`<i class='fa fa-eye'></i>
-                                        <a class='watch_live' onclick=openLiveModal('${item.live_link}')>WATCH LIVE NOW</a>`;
+                                        <a class='watch_live' onclick=openLiveWindow('${item.live_link}')>WATCH LIVE NOW</a>`;
                                 }
                                 
                                 if(state=='upcoming'){
@@ -695,6 +703,14 @@ function get_tournament(game,str) {
         if(tournaments_has_next || str=='prev'){
         var box = $(".tournaments-list");
         var box_mobile = $(".tournaments-list1 .list");
+        var content = $(".tournaments-list1");
+        content.find(".package .list").html("");
+        content.addClass("is-loading");
+        content.find('.loading-item').remove();
+        content.append(
+            "<li class='loading-item'><img class='loading-img white' src='/static/img/loading1.gif' /></li>"
+        );
+        content.find('.no-data').remove();
         box_mobile.html("");
         box.html("");
         box.addClass("is-loading");
@@ -717,10 +733,12 @@ function get_tournament(game,str) {
             success: function (data) {
                 box.html("");
                 box.removeClass("is-loading");
+                content.removeClass("is-loading");
                 box.find('.loading-item').remove();
+                content.find('.loading-item').remove();
                 t=t+1;
 
-                hashchangeddd();
+                //hashchangeddd();
 
                
                 var new_upcomings = [];
@@ -735,6 +753,7 @@ function get_tournament(game,str) {
                 if(data.data.length == 0){
                     $('.firstTab .back,.firstTab .next').addClass('off');
                     box.html("<span class='no-data'>No Data Found</span>");
+                    $('.mobileversion').find('.list').addClass('hide'); 
                     return;
                 }
                 paginator({
@@ -776,7 +795,7 @@ function get_tournament(game,str) {
                         var options = { month: 'long'};
                     
                         var html = `
-                            <div class="newsbv-item `+state+`">
+                            <div class="newsbv-item  tour_${item.id}  `+state+`">
                                 <div class="newsb-thumbnail">
                                     <a rel="bookmark"
                                     href="/tournaments/${item.slug}">
@@ -840,7 +859,7 @@ function get_tournament(game,str) {
                                 html+=`<div class='label'>${state}</div>`;
                                 if(state=='ongoing' && item.live_link){
                                     html+=`<i class='fa fa-eye'></i>
-                                        <a class='watch_live' onclick=openLiveModal('${item.live_link}')>WATCH LIVE NOW</a>`;
+                                        <a class='watch_live' onclick=openLiveWindow('${item.live_link}')>WATCH LIVE NOW</a>`;
                                 }
                                 
                                 if(state=='upcoming'){
@@ -859,13 +878,33 @@ function get_tournament(game,str) {
                         // $('.desktopversion .package').eq($('.desktopversion .package').length-1).append(html); 
         
                         if(state=='upcoming'){
+                            if ($(`.tour_${item.id}`, box_mobile).length === 0) {
+                                if($('.mobileversion').find('.package').eq(1).find('.list').length!=0)
                             $('.mobileversion').find('.package').eq(1).find('.list').append(html);
+                                else
+                                $('.mobileversion').find('.package').eq(1).append('<div class="list">'+ html+'</div>');
+                            }
+                           
                         }
                         else if(state=='ongoing'){
+                            if ($(`.tour_${item.id}`, box_mobile).length === 0) {
+                                if($('.mobileversion').find('.package').eq(0).find('.list').length!=0)  
                             $('.mobileversion').find('.package').eq(0).find('.list').append(html);
+                                else
+                                $('.mobileversion').find('.package').eq(0).append('<div class="list">'+ html+'</div>');
+
+                            }
+                            
                         }
                         else if(state=='previous'){
+                             if ($(`.tour_${item.id}`, box_mobile).length === 0) 
+                             {
+                                if($('.mobileversion').find('.package').eq(2).find('.list').length!=0)  
                             $('.mobileversion').find('.package').eq(2).find('.list').append(html);
+                                else
+                                $('.mobileversion').find('.package').eq(2).append('<div class="list">'+ html+'</div>');
+                        }
+                        
                         }
                         
                         
@@ -966,7 +1005,7 @@ function get_tournament(game,str) {
                                 html+=`<div class='label'>${state}</div>`;
                                 if(state=='ongoing' && item.live_link){
                                     html+=`<i class='fa fa-eye'></i>
-                                        <a class='watch_live' onclick=openLiveModal('${item.live_link}')>WATCH LIVE NOW</a>`;
+                                        <a class='watch_live' onclick=openLiveWindow('${item.live_link}')>WATCH LIVE NOW</a>`;
                                 }
                                 
                                 if(state=='upcoming'){
@@ -1069,6 +1108,7 @@ function getTournaments(status, btn) {
         if($(".newsbv-item.upcoming").length == 0)
         {
             $(".newsbv.tournaments-list").html('<span class="no-data">No Data Found</span>');
+            $(".newsbv.tournaments-list1 .package").eq(0).html('<span class="no-data">There are no upcoming tournaments.</span>');
         }
          
     }  
@@ -1083,6 +1123,8 @@ function getTournaments(status, btn) {
         if($(".newsbv-item.ongoing").length == 0)
         {
             $(".newsbv.tournaments-list").html('<span class="no-data">No Data Found</span>');
+            $(".newsbv.tournaments-list1 .package").eq(1).html('<span class="no-data">There are no ongoing tournaments.</span>');
+            
         }
     }  
     if(status == 'previous')
@@ -1096,7 +1138,9 @@ function getTournaments(status, btn) {
         if($(".newsbv-item.previous").length == 0)
         {
             $(".newsbv.tournaments-list").html('<span class="no-data">No Data Found</span>');
+            $(".newsbv.tournaments-list1 .package").eq(2).html('<span class="no-data">There are no previous tournaments.</span>');
         }         
+              
     }    
     return false;
 }
@@ -1375,6 +1419,7 @@ var winners_ajax = null;
 //get participants
 
 function getWinners(game, tournament) {
+    if($('.home-winners').length!=0){
     if (winners_ajax) winners_ajax.abort();
 
     var box = $(".sec-3-1 .col-8");
@@ -1445,6 +1490,7 @@ function getWinners(game, tournament) {
     });
 
     return false;
+    }
 }
 function get_participants() {
     return new Promise((resolve, reject) => {

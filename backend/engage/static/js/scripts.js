@@ -118,12 +118,12 @@ $(document).ready(function(){
      }
     
 })
-$(window).on('load', function() {
-    hashchanged();
+//$(window).on('load', function() {
+//    hashchanged();
+//});
 
-    
-   
-});
+
+
   
 
 // setTimeout(() => {
@@ -321,7 +321,7 @@ $(document).on("click", ".tabs-container a,.firstTab a,.secondTab a", function (
     {
         $('.firstTab').css('display','flex');
         $('.secondTab').hide();
-        $('.firstTab').find('a').eq(0).click();
+        //$('.firstTab').find('a').eq(0).click();
         $('.tournament_game_content').hide();
         $('#tournament_dv').show();
     }
@@ -425,7 +425,7 @@ function hashchanged() {
 
 function hiya(){
     
-window.location.href="/#home-tournaments";
+window.location.href="#home-tournaments";
   
 }
 
@@ -624,6 +624,11 @@ function openLiveModal(link){
     $(".modal").on('hidden.bs.modal', function () {
         modal.find('iframe').attr('src','');
     });
+}
+
+
+function openLiveWindow(link) {
+  window.open(link, '_blank');
 }
 
 function resetNavSearch() {
@@ -1269,3 +1274,21 @@ function resetStar(obj){
     }) 
   }
 
+var hasScrolledToTarget = false;
+$(window).scroll(function() {
+    if($('.homsec').length!=0){
+    if (hasScrolledToTarget) return;
+      var targetOffset = $("#tournaments").offset().top;
+      var scrollTop = $(window).scrollTop();
+      if (targetOffset - scrollTop < 300 ) {
+          hasScrolledToTarget = true; 
+          myFunction();
+          
+      }
+    }
+    
+});
+
+function myFunction() {
+   $('.firstTab').find('a').eq(0).click();
+  }

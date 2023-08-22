@@ -10,7 +10,7 @@ from engage.account.models import UserTransactionHistory
 from . import serializers
 from .constants import HTML5GameType, NotificationTemplate
 from django.core.mail import send_mail
-
+from django.core.mail import EmailMessage
 
 class AvatarViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Avatar.objects.all()
@@ -65,14 +65,26 @@ class ContactViewSet(viewsets.GenericViewSet):
         support_type = serializer.validated_data['support_type']
         message = serializer.validated_data['message']
         try:
-            send_mail(  # send email function is success
+            # send_mail(  # send email function is success
+            #             'Support Ticket '+support_type,
+            #             'User '+username+ ' - PN#: '+phone_number+' from '+country+' - email: '+email+' has filed a support ticket.\n' \
+            #             'Message: \n'+message,
+            #             'engagegames2023@outlook.com',  # engagetest4@outlook.com support@engageplaywin.com
+            #             ['support@8zonegames.com', 'engagegames2023@outlook.com'],  # engagetest4@outlook.com support@8zonegames.com
+            #             fail_silently=False,  # do not trigger errors
+            #             cc = email
+            #         )
+
+            email = EmailMessage(
                         'Support Ticket '+support_type,
                         'User '+username+ ' - PN#: '+phone_number+' from '+country+' - email: '+email+' has filed a support ticket.\n' \
                         'Message: \n'+message,
-                        'engagetest4@outlook.com',  # engagetest4@outlook.com support@engageplaywin.com
-                        ['support@8zonegames.com', 'engagetest4@outlook.com'],  # engagetest4@outlook.com support@8zonegames.com
-                        fail_silently=False,  # do not trigger errors
+                'engagegames2023@outlook.com',
+                ['support@8zonegames.com', 'engagegames2023@outlook.com', 'support@engageplaywin.com'],
+                cc=[email],
                     )
+
+            email.send()
         except Exception as e:
             print(str(e))
             return Response({'error': 'Error submitting ticket'}, status=444)
@@ -93,14 +105,25 @@ class ContactViewSet(viewsets.GenericViewSet):
         else:
             companystr = ''
         try:
-            send_mail(  # send email function is success
+                   # send_mail(  # send email function is success
+            #             'Contact Engage',
+            #             'User '+name+ ' - PN#: '+phone_number+' from '+country+companystr+' - email: '+email+' has sent a contact request.\n' \
+            #             'Message: \n'+message,
+            #             'engagegames2023@outlook.com',  # engagetest4@outlook.com support@engageplaywin.com
+            #             ['support@8zonegames.com', 'engagegames2023@outlook.com'],  # engagetest4@outlook.com support@8zonegames.com
+            #             cc=[email],
+            #             fail_silently=False,  # do not trigger errors
+            #         )
+            email = EmailMessage(
                         'Contact Engage',
                         'User '+name+ ' - PN#: '+phone_number+' from '+country+companystr+' - email: '+email+' has sent a contact request.\n' \
                         'Message: \n'+message,
-                        'engagetest4@outlook.com',  # engagetest4@outlook.com support@engageplaywin.com
-                        ['support@8zonegames.com', 'engagetest4@outlook.com'],  # engagetest4@outlook.com support@8zonegames.com
-                        fail_silently=False,  # do not trigger errors
+                'engagegames2023@outlook.com',
+                ['support@8zonegames.com', 'engagegames2023@outlook.com', 'support@engageplaywin.com'],
+                cc=[email],
                     )
+            email.send()
+            
         except Exception as e:
             print(str(e))
             return Response({'error': 'Error submitting ticket'}, status=444)

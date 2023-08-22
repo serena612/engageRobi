@@ -46,14 +46,14 @@ class PhonyNumberField(models.CharField):
             cleaned_data = cleaned_data[2:]
         elif len(cleaned_data)==14 and cleaned_data.startswith("+"):
             cleaned_data = cleaned_data[1:]
-        if len(cleaned_data) == 13 and cleaned_data.startswith("234"):
+        if len(cleaned_data) == 13 and cleaned_data.startswith("880"):
             cleaned_data = cleaned_data[3:]
         elif len(cleaned_data)==11 and cleaned_data.startswith("0"):
             cleaned_data = cleaned_data[1:]
         if len(cleaned_data)==10:
             if int(cleaned_data[0:3]) in prefs1 or int(cleaned_data[0:4]) in prefs2:
                 print("Valid Number passing through")
-                return '234'+cleaned_data
+                return '880'+cleaned_data
     
         raise ValidationError(
             _('%(subdata)s is not a valid MTN phone number!'),

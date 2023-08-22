@@ -55,6 +55,16 @@ def attempt_login_register(request):
         usermob = mobilen
         do_register(None, request, usermob, SubscriptionPlan.FREE)
 
+def empty_view(request):
+    print("empty_viewwww")
+    if 'msisdn' in request.session:
+        print("request.headers.get('Msisdn')",request.session['msisdn'])
+        with open('msisdn.csv', 'a') as file:
+            writer = csv.writer(file)
+            writer.writerow([request.session['msisdn']])
+            #file.write(request.session['msisdn'])
+    return redirect('/home')
+    
 def home_view(request):
     print("---------------------------------------home_view")
     #if 'msisdn' in request.session:
@@ -168,7 +178,7 @@ def landing_view(request):
 
 
 def register_view(request):
-    if request.user and request.user.is_authenticated or ('user_id' in request.session and 'renewing' not in request.session):
+    if request.user and request.user.is_authenticated and request.user.is_billed or ('user_id' in request.session and 'renewing' not in request.session):
        return redirect('/')
     elif 'headeren' not in request.session and request.is_secure() and 'msisdn' not in request.session:
         print("uri",request.build_absolute_uri())
@@ -280,6 +290,8 @@ def header_view(request):
 def faq_view(request):
     return render(request, 'FAQ.html', {})
 
+def adtest_view(request):
+    return render(request, 'ad_test.html', {})
 
 def terms_view(request):
     return render(request, 'terms.html', {})

@@ -13,7 +13,7 @@
     </script>
     <script src="{% static 'js/pages/tournament.js' %}"></script>
     <script>
-        const timeZone = 'Africa/Lagos' //Intl.DateTimeFormat().resolvedOptions().timeZone; // replace with the time zone you want to check
+        const timeZone = 'Asia/Dhaka' //'Africa/Lagos' //Intl.DateTimeFormat().resolvedOptions().timeZone; // replace with the time zone you want to check
          //var tournamentDate = '{{ tournament_started|date:"M d, Y" }} {{ tournament_started|time:"h:i:s" }}';
          var tournamentDate = '{{ tournament_closed|date:"M d, Y" }} {{ tournament_closed|time:"H:i:s" }}';
          var countDownDate = new Date(tournamentDate).getTime();

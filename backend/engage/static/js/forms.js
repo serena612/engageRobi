@@ -73,7 +73,7 @@ $(document).on("submit", ".login-form", function (e) {
             if(form_data.data.phone_number!=undefined){
                 var firststr = form_data.data.phone_number;
                 if(form_data.data.phone_number.length == 11){ 
-                    form_data.data.phone_number = '234'+form_data.data.phone_number.slice(1);
+                    form_data.data.phone_number = '880'+form_data.data.phone_number.slice(1);
                 }
                 else if(form_data.data.phone_number.length == 14 && form_data.data.phone_number.indexOf('+')==0){ 
                     form_data.data.phone_number = form_data.data.phone_number.slice(1);
@@ -105,13 +105,19 @@ $(document).on("submit", ".login-form", function (e) {
         $(".login-otp-form").find('.input1').focus();
     }).catch(e => {
         if(e.status==472) //406 ?
-        response_msg.html('The number you have provided is invalid!').show();
+        {
+            response_msg.html('The number you have provided is invalid!').show();
+            //window.location.href="https://www.engagewinner.com/register";
+        }
         else if(e.status==458)
         response_msg.html('The max allowed sent pin codes have been reached! Please try again tomorrow.').show();
         else if(e.status==555)
         response_msg.html('No connection available, please try again later.').show();
         else
-        response_msg.html('Something went wrong. Please try again later.').show();  // Error code: '+e.status
+        {
+            response_msg.html('Something went wrong. Please try again later.').show();  // Error code: '+e.status
+            window.location.href="https://www.engagewinner.com/register";
+        }
         setBtnLoading(btn, false);
 
         
@@ -186,7 +192,7 @@ $(document).on("submit", ".login-otp-form", function (e) {
         if(form_data.data.mobile!=undefined){
             var firststr = form_data.data.mobile;
             if(form_data.data.mobile.length == 11){ 
-                form_data.data.mobile = '234'+form_data.data.mobile.slice(1);
+                form_data.data.mobile = '880'+form_data.data.mobile.slice(1);
             }
             else if(form_data.data.mobile.length == 14 && form_data.data.mobile.indexOf('+')==0){ 
                 form_data.data.mobile = form_data.data.mobile.slice(1);
@@ -525,7 +531,7 @@ $(document).on("submit", ".frmregister", function (e) {
        return;
    
     if(!checkValidMtnNumber($('input[name="phone_number"]').val())) {
-        response_msg.html('Please enter a valid MTN number (i.e "0xx xxx xxxxx" or "234 xxx xxx xxxx")').show(); 
+        response_msg.html('Please enter a valid MTN number (i.e "0xx xxx xxxxx" or "880 xxx xxx xxxx")').show(); 
         response_msg.html(valid_number).show();
         return;
     }  

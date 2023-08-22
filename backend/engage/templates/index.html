@@ -324,8 +324,8 @@
             <div id="tournaments" class="row max-page-width">
                     <div class="title-wrapper c2 with-tabs tabs-container">
                         <a class="tab-link tour-btn" onclick="$('.tournaments-list, .tournaments-list1').show()"
-                           data-id="#latest" href="/#home-tournaments">{% translate 'Tournaments' %}</a>
-                        <a class="tab-link games-btn"  href="/#home-games" onclick="$('.tournaments-list, .tournaments-list1').hide()"  data-id="#html5">{% translate 'Play Games' %}</a>
+                           data-id="#latest" href="#home-tournaments">{% translate 'Tournaments' %}</a>
+                        <a class="tab-link games-btn"  href="#home-games" onclick="$('.tournaments-list, .tournaments-list1').hide()"  data-id="#html5">{% translate 'Play Games' %}</a>
                     </div>
                     <ul class="nav nav-tabs firstTab">
                         <li class="">
@@ -340,7 +340,7 @@
                         <li class="">
                             <a onclick="hiya();return getTournaments('ongoing', this)" class="button-small ongoing">Ongoing</a>
                         </li>
-                        <li style="margin-right: 48px;" class="">
+                        <li style="margin-right: 35px;" class="prev_Btn">
                             <a onclick="hiya();return getTournaments('past', this)"
                                class="button-small previous">{% translate 'Previous' %}</a>
                         </li>
@@ -544,7 +544,7 @@
            </script>
            </div>
            {% endif %}
-            <section class='sec-3-1'>
+             <!-- <section class='sec-3-1'>
                 <div class='row'>
                     <div class='col col-4 home-winners'> 
                     <div class="trapezoid"><h2 class="winners-title">{% translate 'WINNERS' %}</h2></div>
@@ -592,7 +592,7 @@
             </section>
         </div>
         
-    </section>
+    </section> -->
   
     <section class="sec-4">
         <div>
@@ -637,11 +637,11 @@
                         <div class="col-md-12 mb-3">
                             {% if user.is_authenticated %}
                             <input type="text" class="input1 share-link-input"
-                                   value="https://www.engageplaywin.com/register?referrer={{ user.uid }}"
+                                   value="https://www.engagewinner.com/register?referrer={{ user.uid }}"
                                    readonly>
                             {% else %}
                             <input type="text" class="input1 share-link-input"
-                                   value="https://www.engageplaywin.com/register"
+                                   value="https://www.engagewinner.com/register"
                                    readonly>
                             {% endif %}
                             <div class="text-right">
@@ -650,9 +650,9 @@
                                     {% translate 'COPY' %}
                                 </button>
                                 {% if user.is_authenticated %}
-                                <!-- ShareThis BEGIN --><div class="sharethis-inline-share-buttons" data-url="https://www.engageplaywin.com/register?referrer={{ user_uid }}"></div><!-- ShareThis END -->
+                                <!-- ShareThis BEGIN --><div class="sharethis-inline-share-buttons" data-url="https://www.engagewinner.com/register?referrer={{ user_uid }}"></div><!-- ShareThis END -->
                                 {% else %}
-                                <!-- ShareThis BEGIN --><div class="sharethis-inline-share-buttons" data-url="https://www.engageplaywin.com/register"></div><!-- ShareThis END -->
+                                <!-- ShareThis BEGIN --><div class="sharethis-inline-share-buttons" data-url="https://www.engagewinner.com/register"></div><!-- ShareThis END -->
                                 {% endif %}
                             </div>
                         </div>

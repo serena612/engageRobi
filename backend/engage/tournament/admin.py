@@ -417,9 +417,9 @@ class TournamentAdmin(TranslatableAdmin): #admin.ModelAdmin  #TranslatableAdmin
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         formfield = super().formfield_for_dbfield(
             db_field, request, **kwargs)
-        #self.patch_translation_field(db_field, formfield, **kwargs)
-        return formfield
-            
+
+
+
         # if self.tournament is not None and self.tournament.state != "upcoming" and formfield is not None:
         #     formfield.disabled = True
         
@@ -433,6 +433,6 @@ class TournamentAdmin(TranslatableAdmin): #admin.ModelAdmin  #TranslatableAdmin
         css = { 'all': ('admin/tournament/bootstrap-4.5.2.min.css', 'css/bootstrap-multiselect.css', 'css/tournament.css')} # 
         js = ('admin/tournament/select2.min.js', 'admin/tournament/bootstrap-multiselect.js', 'admin/tournament/base.js','admin/tournament/moment.min.js', ) # 'admin/tournament/select2.min.js', # 'js/bootstrap-multiselect.js', , 'admin/tournament/select2.multi-checkboxes.js'
     
-    group_fieldsets = True
-#admin.site.register(models.Tournament, TournamentAdmin)
+
+
         

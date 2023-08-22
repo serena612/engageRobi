@@ -186,7 +186,126 @@
                 var currentyear = new Date().getFullYear();
                 $('.currentyear').text(currentyear);
             })
+           $(window).on('load', function() {
+    hashchanged();  
+});
+
+
+function hashchanged() {
+    
+    setTimeout(function(){
+    var hash = window.location.hash;
+    if($('.homsec').length!=0){
+        switch (hash) {
+            case "#home-tournaments":
+            
+                var c=$("#sec-3").offset().top;
+            
+        
+                $([document.documentElement, document.body]).animate({
+                        scrollTop: $("#sec-3").offset().top-50,
+                    },
+                    c/1.35
+                );
+                $("#sec-3 a.tour-btn").click();
+                resetStar($('#hometournaments'));
+                break;
+
+            case "#home-games":
+                var i=$("#sec-3").offset().top;
+                $([document.documentElement, document.body]).animate({
+                        scrollTop: $("#sec-3").offset().top-50,
+                    },
+                    i/1.35
+                );
+                $("#sec-3 a.games-btn").click();
+                resetStar($('#homegames'));
+                break;
+
+            case "#winners":
+                var w=$(".sec-3-1").offset().top;
+                    $([document.documentElement, document.body]).animate({
+                            scrollTop: $(".sec-3-1").offset().top-50,
+                        },
+                        w/1.35
+                    );
+                    
            
+                    resetStar($('#li_winners'));
+                    
+                    break;
+        
+            case "#redeem-coins":
+                var t=$("#prizes_page").offset().top;
+                $("#prizes_page #coins").click();
+                // $([document.documentElement, document.body]).animate({
+                //         scrollTop: $("#prizes_page").offset().top-50,
+                //     },
+                //     t/1.35
+                // );
+            // resetStar($('#a-redeem'));
+                break;
+            
+            case"#tournament-prizes":
+                    //var t=$("#prizes_page").offset().top;
+                // $("#prizes_page #tournaments").click();
+                    // $([document.documentElement, document.body]).animate({
+                    //         scrollTop: $("#prizes_page").offset().top-50,
+                    //     },
+                    //     t/1.35
+                    // );
+                //  resetStar($('#a-prize'));
+                    break;
+            default:
+                if (hash.length > 1) {
+                    $("a[href='" + hash + "']").click();
+                }
+                break;
+        }
+    }
+    else{
+        switch (hash) {
+            case "#home-tournaments":
+                window.location.href='/home'+hash;
+                break;
+
+            case "#home-games":
+                window.location.href='/home'+hash;
+                break;
+
+            case "#winners":
+                var w=$(".sec-3-1").offset().top;
+                    $([document.documentElement, document.body]).animate({
+                            scrollTop: $(".sec-3-1").offset().top-50,
+                        },
+                        w/1.35
+                    );
+                    
+                
+                    resetStar($('#li_winners'));
+                    
+                    break;
+        
+            case "#redeem-coins":
+                var t=$("#prizes_page").offset().top;
+                $("#prizes_page #coins").click();
+                
+                break;
+            
+            case"#tournament-prizes":
+                    break;
+            default:
+                if (hash.length > 1) {
+                    $("a[href='" + hash + "']").click();
+                }
+                break;
+        }
+    }
+   },500);
+    $(window).trigger("resize");
+    
+  
+}
             
         </script>
        
@@ -210,8 +329,8 @@
                     appId: "1:615474016768:web:7cfa190a078416cc3a9ee5",
                     measurementId: "G-4FTX1VRLYN"
                   };
-                //var user_subscription = '{{ user.subscription }}';
-                var user_subscription = '{{ user.subscription.strip}}';
+                var user_subscription = '{{ user.subscription }}';
+
 
 
                 var profileData = {
@@ -591,14 +710,14 @@
         <div class="bottom-nav">
             <ul>
                 <li>
-                    <a id="hometournaments" href="/#home-tournaments">{% translate 'TOURNAMENTS' %}
+                    <a id="hometournaments" href="/home#home-tournaments">{% translate 'TOURNAMENTS' %}
                         {% if user.is_authenticated%}
                         <i>{% translate '*' %}</i>
                         {% endif%}
                     </a>
                 </li>
                 <li>
-                    <a id="homegames" href="/#home-games">{% translate 'GAMES' %}
+                    <a id="homegames" href="/home#home-games">{% translate 'GAMES' %}
                         {% if user.is_authenticated %}
                         <i>{% translate '*' %}</i>
                         {% endif%}
@@ -619,7 +738,7 @@
                     </a>
                 </li>
                 <li>
-                    <a id='li_winners' href='/#winners'>{% translate 'WINNERS' %}
+                    <a id='a-winner' href='/winners'>{% translate 'WINNERS' %}
                         {% if user.is_authenticated %}
                         <i>{% translate '*' %}</i>
                         {% endif%}
@@ -649,10 +768,10 @@
         <ul class="s-menu">
             <li>
                 <a id="hometournaments"
-                   href="/#home-tournaments">{% translate 'TOURNAMENTS' %}</a>
+                   href="/home#home-tournaments">{% translate 'TOURNAMENTS' %}</a>
             </li>
             <li>
-                <a id="homegames" href="/#home-games">{% translate 'GAMES' %}</a>
+                <a id="homegames" href="/home#home-games">{% translate 'GAMES' %}</a>
             </li>
             <li>
                 <a id="a-prize" href="{% url 'prizes' %}" >{% translate 'PRIZES' %}</a>
@@ -661,7 +780,7 @@
                 <a href="/prizes#redeem-coins" id="a-redeem">{% translate 'REDEEM' %}</a>
             </li>
             <li>
-                <a href='/#winners' id="li_winners">{% translate 'WINNERS' %}</a>
+                <a href='/winners' id="li_winners">{% translate 'WINNERS' %}</a>
             </li>
             {% if user.is_authenticated and user.subscription == "free"%}
             <li>
@@ -735,12 +854,19 @@
                     </ul>
                 </div>
                 <div class="col-md-3 right">
-                    <!-- <div class="social">
+                    <!-- <hr style="opacity: 1!important; margin: 56px 20px 10px!important; background-color: #2C2F36!important"/>
+                    <div class="smedias" style="margin: 0px 20px;padding-top: 20px;">
+                        <a href="" target="_blank" style="display:block;float:left;margin: 0px 7px 0px 18px;padding: 0px;cursor: pointer;"><img src="{% static 'img/facebook.png' %}" border="0" style="width: 32px;" /></a>
+                        <a href="" target="_blank" style="display:block;float:left;margin: 0px 7px 0px 33px;padding: 0px;cursor: pointer;"><img src="{% static 'img/instagram.png' %}" border="0" style="width: 32px;" /></a>
+                        <a href="" target="_blank" style="display:block;float:left;margin: 0px 7px 0px 39px;padding: 0px;cursor: pointer;"><img src="{% static 'img/youtube.png' %}" border="0" style="width: 39px;margin-top:3px" /></a>
+                </div> -->
+
+                    <div class="social">
                         <a href=""><i class="fab fa-youtube"></i></a>
                         <a href=""><i class="fab fa-twitch"></i></a>
                         <a href=""><i class="fab fa-twitter"></i></a>
                         <a href=""><i class="fab fa-facebook-f"></i></a>
-                    </div> -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -1338,7 +1464,7 @@
                                        placeholder="Username" required>
                                 <input name="phone_number" type="number"
                                        class="input1 mb-3"
-                                       placeholder="MTN Phone Number" required>
+                                       placeholder="Phone Number" required>
                                 <select name="country" class="input1 mb-3"
                                         required>
                                     <option value="" disabled  hidden>
@@ -2194,9 +2320,9 @@
         <div class="modal-content" style="text-align: center; background-color: #1D0F26; border-radius: 10px;">          
              
             <div class="modal-body" style="padding-top: 47px; width: 84%; margin: 0px auto 6px;">                    
-                <div style="color:#FF0090">{% translate 'SUBSCRIBERS ONLY!' %}</div>
+                <div style="color:#c50c0c">{% translate 'SUBSCRIBERS ONLY!' %}</div>
                 <div style="margin-bottom: 20px;color: #FFF;font-size: 0.8rem;">{% translate 'PLEASE UPGRADE FROM THE PACKAGE TO N50 PACKAGE TO BE ABLE TO JOIN TOURNAMENTS. TO UPGRADE PLEASE CLICK ON THE BUTTON BELOW.' %}</div>                    
-                <div class="btn_upgrade" style="cursor: pointer; background-color: #FF0090; height: 44px; padding-top: 10px; font-weight: 800; border-radius: 4px; color: #181022; text-align: center; max-width: 100%; margin: 0px auto 20px;">{% translate 'UPGRADE PACKAGE' %}</div>                   
+                <div class="btn_upgrade" style="cursor: pointer; background-color: #c50c0c; height: 44px; padding-top: 10px; font-weight: 800; border-radius: 4px; color: #181022; text-align: center; max-width: 100%; margin: 0px auto 20px;">{% translate 'UPGRADE PACKAGE' %}</div>                   
             </div>
                 
         </div>
@@ -2208,9 +2334,9 @@
         <div class="modal-content" style="text-align: center; background-color: #1D0F26; border-radius: 10px;">          
              
             <div class="modal-body" style="padding-top: 47px; width: 84%; margin: 0px auto 6px;">                    
-                <div style="color:#FF0090">{% translate 'SUBSCRIBERS ONLY!' %}</div>
+                <div style="color:#c50c0c">{% translate 'SUBSCRIBERS ONLY!' %}</div>
                 <div style="margin-bottom: 20px;color: #FFF;font-size: 0.8rem;">{% translate 'PLEASE UPGRADE FROM THE PACKAGE TO N50 PACKAGE TO BE ABLE TO PLAY PREMIUM GAMES. TO UPGRADE PLEASE CLICK ON THE BUTTON BELOW.' %}</div>                    
-                <div class="btn_upgrade" style="cursor: pointer; background-color: #FF0090; height: 44px; padding-top: 10px; font-weight: 800; border-radius: 4px; color: #181022; text-align: center; max-width: 100%; margin: 0px auto 20px;">{% translate 'UPGRADE PACKAGE' %}</div>                   
+                <div class="btn_upgrade" style="cursor: pointer; background-color: #c50c0c; height: 44px; padding-top: 10px; font-weight: 800; border-radius: 4px; color: #181022; text-align: center; max-width: 100%; margin: 0px auto 20px;">{% translate 'UPGRADE PACKAGE' %}</div>                   
             </div>
                 
         </div>

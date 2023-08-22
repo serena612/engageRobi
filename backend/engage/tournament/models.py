@@ -127,12 +127,12 @@ def confirm_request_data(phone_number, idbundle, vault=None):  # default channel
 
 def get_prize(phone_number, dataplan, prize_type, subscription,tournamentid):
     print("Attempting to grant", prize_type, dataplan, "to", phone_number)
-    if subscription == SubscriptionPlan.FREE:
-        subs = SubscriptionPackages.FREE
-    elif subscription == SubscriptionPlan.PAID1:
-        subs = SubscriptionPackages.PAID1
-    elif subscription == SubscriptionPlan.PAID2:
-        subs = SubscriptionPackages.PAID2
+    if subscription == SubscriptionPlan.DAILY:
+        subs = SubscriptionPackages.DAILY
+    elif subscription == SubscriptionPlan.WEEKLY:
+        subs = SubscriptionPackages.WEEKLY
+    elif subscription == SubscriptionPlan.MONTHLY:
+        subs = SubscriptionPackages.MONTHLY
     subs = subs.upper()
     print("subs", subs)
     if prize_type == 'data':

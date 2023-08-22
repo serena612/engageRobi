@@ -48,7 +48,7 @@ class Notifications(FCM):
            
             if one_time:
                 package_ids = [x.id for x in notification.package.all()]
-                if (user.subscription=='free' and  1 in package_ids) or  (user.subscription=='paid1' and 2 in package_ids) or (user.subscription=='paid2' and 3 in package_ids) :
+                if (user.subscription=='daily' and  1 in package_ids) or  (user.subscription=='weekly' and 2 in package_ids) or (user.subscription=='monthly' and 3 in package_ids) :
                     
                     # obj, created = UserNotification.objects.get_or_create(
                     #     user=user,
@@ -83,7 +83,7 @@ class Notifications(FCM):
 
                 if event == NotificationTemplate.DAILY:
                     package_ids = [x.id for x in notification.package.all()]
-                    if (user.subscription=='free' and  1 in package_ids) or  (user.subscription=='paid1' and 2 in package_ids) or (user.subscription=='paid2' and 3 in package_ids) :
+                    if (user.subscription=='daily' and  1 in package_ids) or  (user.subscription=='weekly' and 2 in package_ids) or (user.subscription=='monthly' and 3 in package_ids) :
                     
                         UserNotification.objects.filter(
                             user=user,
@@ -135,7 +135,7 @@ class Notifications(FCM):
 
                 elif event == NotificationTemplate.ONCE_A_MONTH:
                     package_ids = [x.id for x in notification.package.all()]
-                    if (user.subscription=='free' and  1 in package_ids) or  (user.subscription=='paid1' and 2 in package_ids) or (user.subscription=='paid2' and 3 in package_ids) :
+                    if (user.subscription=='daily' and  1 in package_ids) or  (user.subscription=='weekly' and 2 in package_ids) or (user.subscription=='monthly' and 3 in package_ids) :
                         obj, created = UserNotification.objects.get_or_create(
                             user=user,
                             notification=notification,
@@ -148,7 +148,7 @@ class Notifications(FCM):
                         )
                 elif event == NotificationTemplate.LOGIN:
                     package_ids = [x.id for x in notification.package.all()]
-                    if (user.subscription=='free' and  1 in package_ids) or  (user.subscription=='paid1' and 2 in package_ids) or (user.subscription=='paid2' and 3 in package_ids) :
+                    if (user.subscription=='daily' and  1 in package_ids) or  (user.subscription=='weekly' and 2 in package_ids) or (user.subscription=='monthly' and 3 in package_ids) :
                         obj, created = UserNotification.objects.get_or_create(
                             user=user,
                             notification=notification,
@@ -160,7 +160,7 @@ class Notifications(FCM):
                         )
                 else:
                     package_ids = [x.id for x in notification.package.all()]
-                    if (user.subscription=='free' and  1 in package_ids) or  (user.subscription=='paid1' and 2 in package_ids) or (user.subscription=='paid2' and 3 in package_ids) :
+                    if (user.subscription=='daily' and  1 in package_ids) or  (user.subscription=='weekly' and 2 in package_ids) or (user.subscription=='monthly' and 3 in package_ids) :
                         obj = UserNotification.objects.create(
                             user=user,
                             notification=notification,
@@ -207,7 +207,7 @@ class Notifications(FCM):
         package_ids = [x.id for x in notification.package.all()]
         for user in users:
             
-            if (user.subscription=='free' and  1 in package_ids) or  (user.subscription=='paid1' and 2 in package_ids) or (user.subscription=='paid2' and 3 in package_ids) :
+            if (user.subscription=='daily' and  1 in package_ids) or  (user.subscription=='weekly' and 2 in package_ids) or (user.subscription=='monthly' and 3 in package_ids) :
                     
                 obj, created = UserNotification.objects.get_or_create(
                     user=user,
@@ -282,7 +282,7 @@ class Notifications(FCM):
     @_with(log=True, threading=True)
     def send(cls, user, notification):
         package_ids = [x.id for x in notification.package.all()]
-        if (user.subscription=='free' and  1 in package_ids) or  (user.subscription=='paid1' and 2 in package_ids) or (user.subscription=='paid2' and 3 in package_ids):
+        if (user.subscription=='daily' and  1 in package_ids) or  (user.subscription=='weekly' and 2 in package_ids) or (user.subscription=='monthly' and 3 in package_ids):
             obj, created = UserNotification.objects.get_or_create(
                 user=user,
                 notification=notification,
@@ -393,7 +393,7 @@ def notify_when(events, is_route=True, is_one_time=True, extra={}, str_repl = {}
                     if extra_filter1 == {} :
                         for notification in notifications:
                             package_ids = [x.id for x in notification.package.all()]
-                            if (user.subscription=='free' and  1 in package_ids) or  (user.subscription=='paid1' and 2 in package_ids) or (user.subscription=='paid2' and 3 in package_ids) :
+                            if (user.subscription=='daily' and  1 in package_ids) or  (user.subscription=='weekly' and 2 in package_ids) or (user.subscription=='monthly' and 3 in package_ids) :
                                 _user_notifications.append(Notifications.set(**{
                                     'event': event,
                                     'user': user,

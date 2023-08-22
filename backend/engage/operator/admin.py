@@ -24,25 +24,26 @@ class OperatorHomeSectionModelForm(TranslatableModelForm): #ModelForm
             'icon': SVGAndImageFormField,
         }
 
-# class OperatorFaqModelForm(TranslatableModelForm): #ModelForm
-#     class Meta:
-#         model = OperatorFaq
-#         exclude = []
-#         field_classes = {
-#             'icon': SVGAndImageFormField,
-#         }
+class OperatorFaqModelForm(TranslatableModelForm): #ModelForm
+    class Meta:
+        model = OperatorFaq
+        exclude = []
+        fields = '__all__'
+#        field_classes = {
+#            'icon': SVGAndImageFormField,
+#        }
 
-# class RedeemPackageModelForm(TranslatableModelForm): #ModelForm
-#     class Meta:
-#         model = RedeemPackage
-#         exclude = []
-#         field_classes = {
-#             'icon': SVGAndImageFormField,
-#         }
+class RedeemPackageModelForm(TranslatableModelForm): #ModelForm
+    class Meta:
+        model = RedeemPackage
+        exclude = []
+        field_classes = {
+            'icon': SVGAndImageFormField,
+        }
 
 class OperatorFaqInline(CompactInline):
     model = OperatorFaq
-    #form = OperatorFaqModelForm
+    form = OperatorFaqModelForm
 
 
 class OperatorWebsiteInline(TranslatableStackedInline): # admin.StackedInline
@@ -67,7 +68,7 @@ class PurchaseCoinInline(CompactInline):
 
 class RedeemPackageInline(CompactInline):
     model = RedeemPackage
-    #form = RedeemPackageModelForm
+    form = RedeemPackageModelForm
     exclude = ('uid',)
     min_num = 1
 
