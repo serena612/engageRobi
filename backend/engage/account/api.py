@@ -251,10 +251,11 @@ def verify_pincode(phone_number, pincode, vault=None):
         return api_call.content, api_call.status_code
 
 
-def load_data_api(phone_number, idnetwork, vault=None):  
+def load_data_api(phone_number, idnetwork, AocTransId, vault=None):  
     command = '/api/User/LoadData'
     headers = {'msisdn': phone_number, 
-            'idnetwork': idnetwork
+            'idnetwork': idnetwork,
+            'AocTransId':AocTransId
             } 
     
     url = API_SERVER_URL+command
@@ -437,10 +438,10 @@ def do_register(self, request, username, subscription):
 
     print("self",self)
     if self:
-        response2, code2 = load_data_api(username, "1", self.client)  # 1 for wifi
+        response2, code2 = load_data_api(username, "1", "", self.client)  # 1 for wifi
         print("self response",code2)
     else:
-        response2, code2 = load_data_api(username, "1")  # 1 for wifi
+        response2, code2 = load_data_api(username, "1", "")  # 1 for wifi
         print("else response",code2)
 
     if code2==76 or code2==77 or code2==79 or code2==75:  # here we set subscription to idbundle since user already has subscribed somehow using another mean
@@ -502,8 +503,8 @@ def do_register(self, request, username, subscription):
                     if referr:
                         grant_referral_gift(user, referr)
 
-                @notify_when(events=[NotificationTemplate.LOGIN],
-                            is_route=False, is_one_time=False)
+                # @notify_when(events=[NotificationTemplate.LOGIN],
+                #             is_route=False, is_one_time=False)
                 def notify(user, user_notifications):
                     """ extra logic if needed """
                 notify(user=user)
@@ -582,21 +583,44 @@ class AuthViewSet(viewsets.GenericViewSet):
         print("reloading data for",aocTransID)
         try:
             user = UserModel.objects.filter(
-            aocTransID=aocTransID,
-            subscription='' ,
-            is_superuser=False,
-            is_staff=False
+            aocTransID=aocTransID
             ).first()
-            if user :
-                return Response({'message': 'Number not updated yet'}, status=100)
-                
+            if user:
+                userupdated = UserModel.objects.filter(
+                aocTransID=aocTransID,
+                # subscription='' ,
+                is_billed = True,
+                is_active = True
+                ).first()
+
+                if userupdated :
+                    return Response({}, status=status.HTTP_200_OK)
+                else:
+                    return Response({'message': 'Number not updated yet'}, status=100)
             else:
-                return Response({}, status=status.HTTP_200_OK)
+                return Response({'message': 'Profile does not exist'}, status=101)
 
         except UserModel.DoesNotExist:
             return Response({'error': 'Invalid Number'}, status=472)
         
-        
+
+     
+    @action(methods=['POST'], detail=False)
+    def load_data(self,request): 
+        try:
+            aocTransID = request.data.get('aocTransID')
+            print("load data for ",aocTransID)
+            loaddata_response, status_code = load_data_api("", "1", aocTransID) 
+            print("loaddata_response", loaddata_response)
+            if status_code in [56, 84, 75]:
+                return Response({'response': loaddata_response, 'status_code': status_code})
+            elif status_code == 200:
+                return Response({'response': loaddata_response, 'status_code': status_code})
+            
+        except Exception as e:    
+            return Response({'error': loaddata_response, 'status_code': status_code})
+
+
         
     @action(methods=['POST'], detail=False)
     def verify_mobile(self, request):
@@ -617,8 +641,19 @@ class AuthViewSet(viewsets.GenericViewSet):
                 is_staff=False
                 ).first()
                 if not user :
-                   #return Response({'error': 'Invalid Number'}, status=472)
-                   mobile = username
+                   return Response({'error': 'Profile does not exist'}, status=480)
+                   #mobile = username
+                
+                user_sub = UserModel.objects.filter(
+                mobile__iexact=username,
+                region=request.region,
+                is_superuser=False,
+                is_staff=False,
+                is_billed = True
+                ).first()
+                if not user_sub :
+                   return Response({'error': 'Profile does not exist'}, status=480)
+                
         except UserModel.DoesNotExist:
             # return Response({'error': 'Invalid Number'}, status=472)
             mobile = username
@@ -693,7 +728,7 @@ class AuthViewSet(viewsets.GenericViewSet):
             
         if (usermob and code==0) or username in USER_EXCEPTION_LIST or INTEGRATION_DISABLED or usermob.startswith('234102') or DISABLE_PIN:
            
-            response2, code2 = load_data_api(usermob, "1", self.client)  # 1 for wifi
+            response2, code2 = load_data_api(usermob, "1","", self.client)  # 1 for wifi
             
             if code2==56 or code2==75 or code2==76 or code2==77 or code2==79 or username in USER_EXCEPTION_LIST or INTEGRATION_DISABLED or usermob.startswith('234102'):  # 56 profile does not exist - 76 pending sub - 77 pending unsub - 79 sub
                 
@@ -778,8 +813,8 @@ class AuthViewSet(viewsets.GenericViewSet):
                                             referr = User.objects.filter(id=request.session['refid']).first()
                                             grant_referral_gift(user, referr)
 
-                                        @notify_when(events=[NotificationTemplate.LOGIN],
-                                                    is_route=False, is_one_time=False)
+                                        # @notify_when(events=[NotificationTemplate.LOGIN],
+                                        #             is_route=False, is_one_time=False)
                                         def notify(user, user_notifications):
                                             """ extra logic if needed """
                                         notify(user=user)
@@ -814,12 +849,12 @@ class AuthViewSet(viewsets.GenericViewSet):
                     request.session['msisdn'] = user.mobile
                     # return redirect('/wait')
                     return Response({'message': response2}, status=514)
-                if user.is_active:
-                    @notify_when(events=[NotificationTemplate.LOGIN],
-                                is_route=False, is_one_time=False)
-                    def notify(user, user_notifications):
-                        """ extra logic if needed """
-                    notify(user=user)
+                # if user.is_active:
+                #     @notify_when(events=[NotificationTemplate.LOGIN],
+                #                 is_route=False, is_one_time=False)
+                #     def notify(user, user_notifications):
+                #         """ extra logic if needed """
+                #     notify(user=user)
 
                 login(request, user, backend='django.contrib.auth.backends.ModelBackend')
                 request.session['msisdn'] = user.mobile
@@ -851,12 +886,12 @@ class AuthViewSet(viewsets.GenericViewSet):
             usermob = username
         
         otp = request.POST.get('code')
-        # if usermob:
-        #     response, code = verify_pincode(usermob, otp, vault=self.client)  # what if he is registered on api but not here and loaddata check if pendingsub
+        if usermob:
+            response, code = verify_pincode(usermob, otp, vault=self.client)  # what if he is registered on api but not here and loaddata check if pendingsub
             
         if (usermob) or username in USER_EXCEPTION_LIST or INTEGRATION_DISABLED or usermob.startswith('234102') or DISABLE_PIN:
            
-            response2, code2 = load_data_api(usermob, "1", self.client)  # 1 for wifi
+            response2, code2 = load_data_api(usermob, "1","", self.client)  # 1 for wifi
             
             if code2==56 or code2==75 or code2==76 or code2==77 or code2==79 or username in USER_EXCEPTION_LIST or INTEGRATION_DISABLED or usermob.startswith('234102'):  # 56 profile does not exist - 76 pending sub - 77 pending unsub - 79 sub
                 
@@ -926,8 +961,8 @@ class AuthViewSet(viewsets.GenericViewSet):
                                             referr = User.objects.filter(id=request.session['refid']).first()
                                             grant_referral_gift(user, referr)
 
-                                        @notify_when(events=[NotificationTemplate.LOGIN],
-                                                    is_route=False, is_one_time=False)
+                                        # @notify_when(events=[NotificationTemplate.LOGIN],
+                                        #             is_route=False, is_one_time=False)
                                         def notify(user, user_notifications):
                                             """ extra logic if needed """
                                         notify(user=user)
@@ -962,12 +997,12 @@ class AuthViewSet(viewsets.GenericViewSet):
                     request.session['msisdn'] = user.mobile
                     # return redirect('/wait')
                     return Response({'message': response2}, status=514)
-                if user.is_active:
-                    @notify_when(events=[NotificationTemplate.LOGIN],
-                                is_route=False, is_one_time=False)
-                    def notify(user, user_notifications):
-                        """ extra logic if needed """
-                    notify(user=user)
+                # if user.is_active:
+                #     @notify_when(events=[NotificationTemplate.LOGIN],
+                #                 is_route=False, is_one_time=False)
+                #     def notify(user, user_notifications):
+                #         """ extra logic if needed """
+                #     notify(user=user)
 
                 login(request, user, backend='django.contrib.auth.backends.ModelBackend')
                 request.session['msisdn'] = user.mobile
@@ -1004,7 +1039,7 @@ class AuthViewSet(viewsets.GenericViewSet):
         
         if usermob  or username in USER_EXCEPTION_LIST or INTEGRATION_DISABLED  or DISABLE_PIN:
  
-            response2, code2 = load_data_api(usermob, "1", self.client)  # 1 for wifi
+            response2, code2 = load_data_api(usermob, "1", "",self.client)  # 1 for wifi
             
             if code2==56 or code2==75 or code2==76 or code2==77 or code2==79 or username in USER_EXCEPTION_LIST or INTEGRATION_DISABLED:  # 56 profile does not exist - 76 pending sub - 77 pending unsub - 79 sub
                 
@@ -1075,8 +1110,8 @@ class AuthViewSet(viewsets.GenericViewSet):
                                             referr = User.objects.filter(id=request.session['refid']).first()
                                             grant_referral_gift(user, referr)
 
-                                        @notify_when(events=[NotificationTemplate.LOGIN],
-                                                    is_route=False, is_one_time=False)
+                                        # @notify_when(events=[NotificationTemplate.LOGIN],
+                                        #             is_route=False, is_one_time=False)
                                         def notify(user, user_notifications):
                                             """ extra logic if needed """
                                         notify(user=user)
@@ -1100,6 +1135,16 @@ class AuthViewSet(viewsets.GenericViewSet):
                             is_superuser=False,
                             is_staff=False
                             )
+                        avatar = Avatar.objects.order_by('?').first()
+                        saved_avatar= UserModel.objects.get(
+                            username__iexact=username,
+                            region=request.region,
+                            avatar = 'null'
+                            )
+                        if saved_avatar:
+                             user.avatar = avatar
+                        user.save()
+
                 except UserModel.DoesNotExist:
                     raise exceptions.ValidationError({'error':'Invalid Mobile Number'})
                 if not user:
@@ -1111,12 +1156,12 @@ class AuthViewSet(viewsets.GenericViewSet):
                     request.session['msisdn'] = user.mobile
                     # return redirect('/wait')
                     return Response({'message': response2}, status=514)
-                if user.is_active:
-                    @notify_when(events=[NotificationTemplate.LOGIN],
-                                is_route=False, is_one_time=False)
-                    def notify(user, user_notifications):
-                        """ extra logic if needed """
-                    notify(user=user)
+                # if user.is_active:
+                #     @notify_when(events=[NotificationTemplate.LOGIN],
+                #                 is_route=False, is_one_time=False)
+                #     def notify(user, user_notifications):
+                #         """ extra logic if needed """
+                #     notify(user=user)
 
                 login(request, user, backend='django.contrib.auth.backends.ModelBackend')
                 request.session['msisdn'] = user.mobile
@@ -1321,6 +1366,9 @@ class UserViewSet(mixins.ListModelMixin,
         elif new_substatus.lower() == SubscriptionPackages.MONTHLY:
             subscription = SubscriptionPlan.MONTHLY
             is_billed = True
+        elif new_substatus.lower() == SubscriptionPackages.ONDEMAND:
+            subscription = SubscriptionPlan.ONDEMAND
+            is_billed = True
         else:
             subscription = SubscriptionPlan.FREE
         
@@ -1331,14 +1379,27 @@ class UserViewSet(mixins.ListModelMixin,
         userexist = User.objects.filter(mobile=msisdn)
         transidexist = User.objects.filter(aocTransID=aocid, subscription = '')
 
-        if transidexist:
-            num = transidexist.update(mobile = msisdn,subscription=subscription, is_billed=is_billed)
+        if transidexist and not userexist:
+            num = transidexist.update(mobile = msisdn,subscription=subscription, is_billed=is_billed, is_active = True, aocTransID = aocid, avatar_id = 1)
             
             num = 1
             if num >0:
                 resp['message'] = 'User subscription has been successfully updated!'
                 resp['subscription'] = new_substatus
                 resp['aocTransID'] = aocid
+
+                avatarnotexist = User.objects.filter(mobile=msisdn, avatar_id__isnull = True)
+                avatar = Avatar.objects.order_by('?').first()
+                if avatarnotexist:
+                    if avatar :
+                        user.avatar = avatar
+                    user.save()
+                
+                # @notify_when(events=[NotificationTemplate.LOGIN],
+                #             is_route=False, is_one_time=False)
+                def notify(user, user_notifications):
+                    """ extra logic if needed """
+                notify(user=user)
 
                 return Response(resp, status=status.HTTP_200_OK)
                 #return redirect("/")
@@ -1408,7 +1469,7 @@ class UserViewSet(mixins.ListModelMixin,
                 #print ("init modified ",str(userexist.first().modified))
                 
                 #print ("userexist.query ",str(userexist.query))
-                num = userexist.update(subscription=str(subscription), is_billed=is_billed)
+                num = userexist.update(subscription=str(subscription), is_billed=is_billed,aocTransID = aocid)
                 
                 
                 #user.nickname = 'carol'
@@ -1885,14 +1946,16 @@ class UserViewSet(mixins.ListModelMixin,
         subscriptionName = request.query_params.get('subscriptionName')
         subscriptionID = request.query_params.get('subscriptionID')
         description = request.query_params.get('description')
-        command = '/api/token/generatetoken?phone_number='+phone_number+'&amount='+amount+'&subscriptionDuration='+subscriptionDuration+'&subscriptionName='+subscriptionName+'&subscriptionID='+subscriptionID+'&description='+description
+        isSubscription = request.query_params.get('isSubscription')
+        command = '/api/token/generatetoken?phone_number='+phone_number+'&amount='+amount+'&subscriptionDuration='+subscriptionDuration+'&subscriptionName='+subscriptionName+'&subscriptionID='+subscriptionID+'&description='+description+'&isSubscription='+isSubscription
         data = {
             'amount':amount,
             'contactInfo':phone_number,
             'subscriptionDuration':subscriptionDuration,
             'subscriptionName':subscriptionName,
             'subscriptionID':subscriptionID,
-            'description':description
+            'description':description,
+            'isSubscription':isSubscription
         }
         url = REGISTRATION_REDIRECT_URL+command
         print("////////////url",url)
@@ -1974,12 +2037,14 @@ class UserViewSet(mixins.ListModelMixin,
 
     @action(['POST'], detail=True, permission_classes=[permissions.IsAuthenticated])
     def upgrade_subscription(self, request, uid):
-        user = request.user
-        print("user" + request.user.mobile)
-        #if user.subscription == SubscriptionPlan.FREE :
-        #user.subscription = SubscriptionPlan.PAID2
-        idservice = SubscriptionPackages.PAID2
-        upgrade_api(request.user.mobile, 3, SubscriptionPackages.PAID2, referrer=None, vault=None)
+
+        return redirect('/register')
+        # user = request.user
+        # print("user" + request.user.mobile)
+        # #if user.subscription == SubscriptionPlan.FREE :
+        # #user.subscription = SubscriptionPlan.PAID2
+        # idservice = SubscriptionPackages.PAID2
+        # upgrade_api(request.user.mobile, 3, SubscriptionPackages.PAID2, referrer=None, vault=None)
         #@notify_when(events=[NotificationTemplate.ONWARDANDUPWARD], is_route=False, is_one_time=False)
         #def notify(user, user_notifications):
         #    """ extra logic if needed """
@@ -1999,11 +2064,13 @@ class UserViewSet(mixins.ListModelMixin,
         #if user.subscription == SubscriptionPlan.FREE :
         #user.subscription = SubscriptionPlan.PAID2
         if (user.subscription == SubscriptionPlan.DAILY):
-            subscriptionId = 'ADBoxDaily'
+            subscriptionId = 'ENGAGE Daily'
         elif (user.subscription == SubscriptionPlan.WEEKLY):
-            subscriptionId = 'ADBoxWeekly'
+            subscriptionId = 'ENGAGE Weekly'
         elif (user.subscription == SubscriptionPlan.MONTHLY):
-            subscriptionId = 'ADBoxMonthly'
+            subscriptionId = 'ENGAGE Monthly'
+        elif (user.subscription == SubscriptionPlan.ONDEMAND):
+            subscriptionId = 'ENGAGE OnDemand'
         unsubscribe_api(request.user.mobile, subscriptionId, referrer=None, vault=None)
 
         return Response(status=status.HTTP_200_OK)
