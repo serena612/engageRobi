@@ -46,7 +46,7 @@ class PhonyNumberField(models.CharField):
             cleaned_data = cleaned_data[2:]
         elif len(cleaned_data)==14 and cleaned_data.startswith("+"):
             cleaned_data = cleaned_data[1:]
-        if len(cleaned_data) == 13 and cleaned_data.startswith("880"):
+        if len(cleaned_data) == 13 and cleaned_data.startswith("88"):
             cleaned_data = cleaned_data[3:]
         elif len(cleaned_data)==11 and cleaned_data.startswith("0"):
             cleaned_data = cleaned_data[1:]

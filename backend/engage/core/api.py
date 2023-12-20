@@ -79,8 +79,8 @@ class ContactViewSet(viewsets.GenericViewSet):
                         'Support Ticket '+support_type,
                         'User '+username+ ' - PN#: '+phone_number+' from '+country+' - email: '+email+' has filed a support ticket.\n' \
                         'Message: \n'+message,
-                'engagegames2023@outlook.com',
-                ['support@8zonegames.com', 'engagegames2023@outlook.com', 'support@engageplaywin.com'],
+                'engagewin.bd@outlook.com',
+                ['engagewin.bd@outlook.com'],
                 cc=[email],
                     )
 
@@ -118,8 +118,8 @@ class ContactViewSet(viewsets.GenericViewSet):
                         'Contact Engage',
                         'User '+name+ ' - PN#: '+phone_number+' from '+country+companystr+' - email: '+email+' has sent a contact request.\n' \
                         'Message: \n'+message,
-                'engagegames2023@outlook.com',
-                ['support@8zonegames.com', 'engagegames2023@outlook.com', 'support@engageplaywin.com'],
+                'engagewin.bd@outlook.com',
+                ['engagewin.bd@outlook.com'],
                 cc=[email],
                     )
             email.send()

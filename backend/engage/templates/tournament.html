@@ -155,14 +155,18 @@ if (timeleft < 0) {
                                 </a>
                             {% endif %}    
                         </li>
-                        <li><a
-                                id="practice"
-                                href=""
-                                data-link-android="{{ tournament.game.android_link }}"
-                                data-link-ios="{{ tournament.game.ios_link }}"
-                                data-link-pc="{{ tournament.game.pc_link }}"
-                                target="_blank"
-                        >{% translate 'Practice' %}</a>
+                        <li>
+                            {% if tournament.leader_board_link %}
+                                <a id="practice" href="{{ tournament.leader_board_link }}" target="_blank">
+                            {% else %}
+                                <a id="practice" href="{% if tournament.leader_board_link %}{{ tournament.leader_board_link }}{% endif %}"
+                                    data-link-android="{{ tournament.game.android_link }}"
+                                    data-link-ios="{{ tournament.game.ios_link }}"
+                                    data-link-pc="{{ tournament.game.pc_link }}"
+                                    target="_blank">
+                            {% endif %}
+                                {% translate 'Practice' %}
+                                </a>
                         </li>
                         <li id="joinStatus">
                         {% if participant %}
@@ -458,7 +462,7 @@ if (timeleft < 0) {
                     <div class="modal-content" style="text-align: center; background-color: #1D0F26; border-radius: 10px;"> 
                     <div class="modal-body" style="padding-top: 47px; width: 84%; margin: 0px auto 6px;">                    
                         <div style="color:#FF0090">{% translate 'SUBSCRIBERS ONLY!' %}</div>
-                        <div style="margin-bottom: 20px;color: #FFF;font-size: 0.8rem;">{% translate 'PLEASE UPGRADE FROM THE PACKAGE TO N50 PACKAGE TO BE ABLE TO JOIN TOURNAMENTS. TO UPGRADE PLEASE CLICK ON THE BUTTON BELOW.' %}</div>                    
+                        <div style="margin-bottom: 20px;color: #FFF;font-size: 0.8rem;">{% translate 'PLEASE UPGRADE FROM THE PACKAGE TO DAILY PACKAGE TO BE ABLE TO JOIN TOURNAMENTS. TO UPGRADE PLEASE CLICK ON THE BUTTON BELOW.' %}</div>                    
                         <div class="btn_upgrade" style="cursor: pointer; background-color: #FF0090; height: 44px; padding-top: 10px; font-weight: 800; border-radius: 4px; color: #181022; text-align: center; max-width: 100%; margin: 0px auto 20px;">{% translate 'UPGRADE PACKAGE' %}</div>                   
                     </div>
                 </div>
@@ -528,14 +532,16 @@ if (timeleft < 0) {
                                 </div>
                                 <div class="col-md-12 mb-3">
                                     {% if game_account %}
-                                        <label for="gacc1">{% translate 'Game account is your in-game ID. You need to create it in the game itself to be eligible to participate in the tournament.' %}</label>
+                                        <label for="gacc1">'Your IGN (In Game Name) is the name on your game profile and it is required to participate in the tournament. 
+                                            Incorrect IGN or name misplacement may lead to disqualification.'</label>
                                         <input type="text" class="input1"
                                                name="account" id="gacc1"
                                                placeholder="{% translate 'Enter your game account' %}" required
                                                value="{{ game_account.account }}"
                                         />
                                     {% else %}
-                                        <label for="gacc1">{% translate 'Game account is your in-game ID. You need to create it in the game itself to be eligible to participate in the tournament.' %}</label>
+                                        <label for="gacc1">{% translate 'Your IGN (In Game Name) is the name on your game profile and it is required to participate in the tournament. 
+                                            Incorrect IGN or name misplacement may lead to disqualification.' %}</label>
                                         <input type="text" class="input1"
                                                name="account" id="gacc1"
                                                placeholder="{% translate 'Enter your game account' %}" required
@@ -585,14 +591,16 @@ if (timeleft < 0) {
                             </div>
                             <div class="col-md-12 mb-3">
                                 {% if game_account %}
-                                    <label for="gacc2">{% translate 'Game account is your in-game ID. You need to create it in the game itself to be eligible to participate in the tournament.' %}</label>
+                                    <label for="gacc2">{% translate 'Your IGN (In Game Name) is the name on your game profile and it is required to participate in the tournament. 
+                                        Incorrect IGN or name misplacement may lead to disqualification.' %}</label>
                                     <input type="text" class="input1"
                                             name="account" id="gacc2"
                                             placeholder="{% translate 'Enter your game account' %}"
                                             value="{{ game_account.account }}"
                                     />
                                 {% else %}
-                                <label for="gacc2">{% translate 'Game account is your in-game ID. You need to create it in the game itself to be eligible to participate in the tournament.' %}</label>
+                                <label for="gacc2">{% translate 'Your IGN (In Game Name) is the name on your game profile and it is required to participate in the tournament. 
+                                    Incorrect IGN or name misplacement may lead to disqualification.' %}</label>
                                     <input type="text" class="input1"
                                             name="account" id="gacc2"
                                             placeholder="{% translate 'Enter your game account' %}"

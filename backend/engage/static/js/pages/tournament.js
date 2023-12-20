@@ -182,8 +182,7 @@ $(function () {
                     error: function (response) {
                         $("#user-game-modal").modal("hide");
                         if(response.code === 'unbilled_user'){
-
-
+                            
                             showInfoModal('Recharge Line!', '<p>You don\'t have enough balance to join this tournament. Please recharge your line and try again.</p>');
                         } else if(response.code === 'free_user'){
                             showInfoModal('Error!', '<p>This tournament does not accept free users. Please <a href="/register">subscribe to Engage</a> in order to join.</p>');
@@ -394,6 +393,7 @@ $('.btn_upgrade').on("click", function () {
                 },
                 success: function (value) {
                     resolve(value);
+                    window.location.href = "/register";
                 },
             });
         });

@@ -142,9 +142,9 @@ def fetch_match_details(self, match_id):
         stri_repl = {}
         if match.start_date:
             if match.tournament.time_compared_to_gmt:               
-                stri_repl['STARTDATE'] = (match.start_date+timedelta(hours=int(match.tournament.time_compared_to_gmt))).strftime("%H:%M")
+                stri_repl['STARTDATE'] = (match.start_date+timedelta(hours=int(match.tournament.time_compared_to_gmt))).strftime("%I:%M %p")  #("%H:%M")
             else:
-                stri_repl['STARTDATE'] = match.start_date.strftime("%H:%M")
+                stri_repl['STARTDATE'] = match.start_date.strftime("%I:%M %p") #("%H:%M")
             if match.tournament.label_next_time:
                 stri_repl['STARTDATE'] = stri_repl['STARTDATE'] + " " + match.tournament.label_next_time
         else:
@@ -168,9 +168,9 @@ def fetch_match_details(self, match_id):
                     for notificationi in user_notifications:
                         if match.start_date:
                             if match.tournament.label_next_time and match.tournament.time_compared_to_gmt:
-                                date_time = (match.start_date+timedelta(hours=int(match.tournament.time_compared_to_gmt))).strftime("%H:%M") + " "+ match.tournament.label_next_time
+                                date_time = (match.start_date+timedelta(hours=int(match.tournament.time_compared_to_gmt))).strftime("%I:%M %p") + " "+ match.tournament.label_next_time
                             else:
-                                date_time = match.start_date.strftime("%H:%M")
+                                date_time = match.start_date.strftime("%I:%M %p")
                         else:
                             date_time = ''
                         print(notificationi.text)

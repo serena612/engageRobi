@@ -41,12 +41,38 @@ function getCookie(name) {
 // }
 
 var times = 0;
+
 function CheckDataSync(data) {
     const xtoken = getCookie('csrftoken');
 
     return new Promise((resolve, reject) => {
         $.ajax({
             url: '/api/auth/check_data_sync/',
+            
+            headers: {
+                "X-CSRFToken": xtoken,
+            },
+            type: "post",
+            data: {
+                aocTransID: data.aocTransID,
+            },
+            error: function (value) {
+                reject(value);
+            },
+            success: function (value) {
+                resolve(value);
+            
+            },
+        });
+    });
+}
+
+function LoadData(data) {
+    const xtoken = getCookie('csrftoken');
+
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: '/api/auth/load_data/',
             
             headers: {
                 "X-CSRFToken": xtoken,
@@ -88,20 +114,43 @@ $("#wait-modal .msg").removeClass("d-none");
 //var data={'aocTransID':''};
 function keepUpdated() {
     times += 1;
-    // console.log("times = "+times);
     if (times>50){
-        // response_msg.html("<img class='loading-img' src='/static/img/loading1.gif' /><br>Your request is under process. Please check back later. <a href='/'>Refresh</a>").show();
-       /////// clearInterval(tt);
-        response_msg.html("Your request is under process. Please check back later.").show();  //  <a href='/'>Refresh</a>
-        showloader();
+        data={}
+        const urlParams = new URLSearchParams(window.location.search);
+        data.aocTransID = urlParams.get('aocTransID');
+        LoadData(data).then(res => {
+            $('.login-form').trigger("reset");
+
+            if(res['status_code']==84) //406 ?
+            response_msg.html('Failed to recharge. Please try again later.').show();
+            else if(res['status_code']==75)
+            response_msg.html('Your subscription is pending.').show();
+            else if(res['status_code']==56)
+            response_msg.html('Profile does not exist.').show();
+
+            setTimeout(keepUpdated, 5000); // 1000 milliseconds = 1 second
+            setTimeout(function(){
+                window.location.href = '/' //'/clear'          
+            },1000);
+        }).catch(e => {
+            console.log("e", e);
+            if(e.status==484) //406 ?
+            response_msg.html('Failed to recharge. Please try again later.').show();
+            else if(e.status==475)
+            response_msg.html('Your subscription is pending.').show();
+            else if(e.status==456)
+            response_msg.html('Profile does not exist.').show();
+            else{
+            response_msg.html('Something went wrong. Please try again later.').show();  //  Error code: '+e.status
+           
+        }
+    });
+        //response_msg.html("Your request is under process. Please check back later.").show();  //  <a href='/'>Refresh</a>
+        //showloader();
         $("#subscribeRetry").removeClass("d-none");
-        return;}
-    // console.log("Updating using token "+xtoken);
+        return;
+    }
     
-  
-    // console.log(usermobile);
-    // important must add header check here
-    //data.idnetwork = '1';
     data={}
     response_msg = $('.sub_status');
     const urlParams = new URLSearchParams(window.location.search);
@@ -109,6 +158,11 @@ function keepUpdated() {
     CheckDataSync(data).then(res => {
         response_msg.html("Subscription Success !").show();
         postLoginOTPRobi(data.aocTransID).then(res => {
+            $('.login-form').trigger("reset");
+            setTimeout(keepUpdated, 5000); // 1000 milliseconds = 1 second
+            setTimeout(function(){
+                window.location.href = '/' //'/clear'          
+            },1000);
         }).catch(e => {
             console.log("e", e);
             if(e.status==471) //406 ?
@@ -121,8 +175,11 @@ function keepUpdated() {
             response_msg.html('Something went wrong. Please try again later.').show();  //  Error code: '+e.status
            
         }
+        setTimeout(function(){
+            window.location.href = '/' //'/clear'          
+        },1000);
         });
-       window.location.href = '/' //'/clear'
+      // window.location.href = '/' //'/clear'
     }).catch(e => {
         if(e.status==-1){
         response_msg.html("We are subscribing you to Engage. Please wait...").show();

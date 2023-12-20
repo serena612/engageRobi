@@ -21,7 +21,46 @@ src="{% static 'libs/slick/slick.min.js' %}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"
 integrity="sha512-3j3VU6WC5rPQB4Ld1jnLV7Kd5xr+cq9avvhwqzbH/taCRNURoeEpoPBK9pDyeukwSxwRPJ8fDgvYXd6SkaZ2TA=="
 crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap"/>
+<style>
+*{
+    font-family: "Titillium Web";
+    outline: none !important;
+}
+.loader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 49vh;
+}
 
+.loader {
+    border: 16px solid #f3f3f3;
+    border-top: 16px solid #c50c0c;
+    border-radius: 50%;
+    width: 84px;
+    height: 84px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.waitText {
+  margin-top: 20px;
+  text-align: center;
+  color:#fff;
+}
+
+.sub_status {
+  display: block;
+  margin-top: 20px; color:#fff;
+}
+body{ background: #100614;}
+#Re-Reg{color:#c50c0c;}
+</style>
 <script type="application/javascript"
 src="{% static 'libs/jquery-3.6.0.min.js' %}"></script>
 
@@ -32,16 +71,19 @@ src="{% static 'libs/jquery-3.6.0.min.js' %}"></script>
     var is_authenticated = false;
 
 </script>
-<!-- <script type="application/javascript"
-                src="{% static 'js/wait.js' %}"></script> -->
-<!-- <script type="application/javascript"
-                src="{% static 'js/api.js' %}"></script> -->
+<script type="application/javascript"
+                src="{% static 'js/wait.js' %}"></script>
+<script type="application/javascript"
+                src="{% static 'js/api.js' %}"></script>
 
 </head>
 
 
 {% block content %}
 <div class="container h-100">
+<div class="loader-container">
+  <div class="loader"></div>
+</div>
     <div class="row h-100 justify-content-center align-items-center">
       
        <div class="col-12">

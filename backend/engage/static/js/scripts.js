@@ -117,6 +117,48 @@ $(document).ready(function(){
         $('body').addClass('adjust_style3');
      }
     
+    $('#upgrade-package-coins-modal .modal-content').on("click", function () {
+        setBtnLoading($(this), true);
+      
+        function upgrade_subsp() {
+            return new Promise((resolve, reject) => {
+                $.ajax({
+                    url: upgrade_subscription.replace("user_uid", user_uid),
+                    headers: {
+                        "X-CSRFToken": xtoken,
+                    },
+                    type: "post",
+                    data: {},
+                    error: function (value) {
+                        reject(value);
+                    },
+                    success: function (value) {
+                        value.is_sub
+                            resolve(value);
+                            if (value.is_sub == 'false')
+                            {
+                                window.location.href="/secured"
+                            }
+                    },
+                });
+            });
+        }
+        upgrade_subsp().then(function (_) {
+            
+            $("#upgrade-package-coins-modal").modal("hide");
+            $("#upgrade-package-coins-modal").find('.btn_upgrade').removeClass("is-loading");
+            $("#upgrade-package-coins-modal").find('.btn_upgrade').prop("disabled", false);
+    
+            //window.location.reload(true);
+        }).catch(function (error) {
+          $("#upgrade-package-coins-modal").modal("hide");
+          $("#upgrade-package-coins-modal").find('.btn_upgrade').removeClass("is-loading");
+          $("#upgrade-package-coins-modal").find('.btn_upgrade').prop("disabled", false);
+    
+            showInfoModal('Error!', '<p>Something went wrong, please try again later.</p>')
+        });
+      });
+    
 })
 //$(window).on('load', function() {
 //    hashchanged();
@@ -617,6 +659,18 @@ function unsubscribe() {
         }) 
       }
 
+function fn_logout(url){
+    if(!$('.logout').hasClass('freeze')){
+        window.location.href=url;
+        $('.logout').addClass('freeze');
+    }
+}
+
+function callBothFunctions() {
+    unsubscribe();
+    fn_logout("{% url 'logout' %}");
+    }
+
 function openLiveModal(link){
     var modal = $('#live-modal');
     modal.find('iframe').attr('src',link);
@@ -696,12 +750,19 @@ $(document).on("click", "#remove-friend-button", function (e) {
 // Send Coins
 
 $(document).on("click", ".send-coins-btn", function (e) {
-    e.preventDefault();
-    var uid = $(this).closest("li").data("id");
-    $("#send-coins").find("input[name=friend]").val(uid);
-    $('#send-coins-form').find('.input-number').val(1);
-    $("#send-coins").find(".response-msg").html("");
-    $("#send-coins").modal();
+    if($("#userSub").val() !== "free" )
+    {
+        e.preventDefault();
+        var uid = $(this).closest("li").data("id");
+        $("#send-coins").find("input[name=friend]").val(uid);
+        $('#send-coins-form').find('.input-number').val(1);
+        $("#send-coins").find(".response-msg").html("");
+        $("#send-coins").modal();
+    }
+    else
+    {
+        $('#upgrade-package-coins-modal').modal('show');
+    }
 })
 
 $(document).on("click", ".input-number-box .input-number-increment", function () {
@@ -940,6 +1001,10 @@ $(function () {
     //         return;
     //     }
 
+        openG(target);
+
+        // old games
+
         $.ajax({
             url: `/games/${target}/`,
             headers: {
@@ -1058,6 +1123,11 @@ $(function () {
         
     // }
 });
+
+function openG(gameName){ 
+    $("#g").val(gameName);
+    $('#btn-form-submit').click(); 
+}
 
 function copyToClipboard(txt) {
     var m = document;

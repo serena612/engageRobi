@@ -133,19 +133,22 @@ def get_prize(phone_number, dataplan, prize_type, subscription,tournamentid):
         subs = SubscriptionPackages.WEEKLY
     elif subscription == SubscriptionPlan.MONTHLY:
         subs = SubscriptionPackages.MONTHLY
+    elif subscription == SubscriptionPlan.ONDEMAND:
+        subs = SubscriptionPackages.ONDEMAND
     subs = subs.upper()
     print("subs", subs)
     if prize_type == 'data':
-        reply, code = request_data_prize(tournamentid,phone_number, dataplan.data_plan, subs)
+        # reply, code = request_data_prize(tournamentid,phone_number, dataplan.data_plan, subs)
+        reply, code = request_cash_prize(tournamentid,phone_number, dataplan, subs)
         print(reply, code)
         if code==0:
-            pending, code2 = check_pending_requests_data(phone_number)
-            print(pending, code2)
-            if code2==0:
-                msg, code3 = confirm_request_data(phone_number, pending[0]['prizeProcessId'])
-                print(msg, code3)
-                if code3==0: # success
-                    return True
+            # pending, code2 = check_pending_requests_data(phone_number)
+            # print(pending, code2)
+            # if code2==0:
+            #     msg, code3 = confirm_request_data(phone_number, pending[0]['prizeProcessId'])
+            #     print(msg, code3)
+            #     if code3==0: # success
+            return True
     elif prize_type == 'cash':
         reply, code = request_cash_prize(tournamentid,phone_number, dataplan, subs)
         print(reply, code)
@@ -179,7 +182,7 @@ class Tournament(TranslatableTimeStampedModel): #TimeStampedModel
     
 
     live_link = models.URLField(blank=True, null=True)
-    
+    leader_board_link = models.URLField(blank=True, null=True)
     
     minimum_profile_level = models.PositiveIntegerField(default=0)
     give_sticker = models.BooleanField('Give stickers to participants?',

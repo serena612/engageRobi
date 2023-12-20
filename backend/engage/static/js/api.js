@@ -22,24 +22,22 @@ var defaultlang="en-us";
 var lang = lang_code;
 console.log("lang",lang);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+  }
+  
 function hoo(){
     if(t>=1){
        window.location.hash="#home-tournaments";
@@ -130,6 +128,7 @@ function postLoginOTP(data) {
 }
 
 function postLoginOTPRobi(data) {
+    const xtoken = getCookie('csrftoken');
     return new Promise((resolve, reject) => {
         $.ajax({
             url: '/api/auth/loginrobi/',
@@ -1517,6 +1516,7 @@ function get_participants() {
 
 
 function checkLogMenus(){
+    const xtoken = getCookie('csrftoken');
     $.ajax({
         url: sections_log,
         headers: {
@@ -2329,9 +2329,9 @@ function getTrophies(uid, box, size) {
 }
 
 $(document).ready(function(){
-    $(".packages #daily").on("click", function (request) {
+    $("#btndaily").on("click", function (request) {
         $('#user_sub_mod').val('daily');
-        var numberVal = Math.floor(Math.random()*9000000)+1000000;
+        var numberVal = "01860744898" // Math.floor(Math.random()*9000000)+1000000;
             return new Promise((resolve, reject) => {
                 $.ajax({
                     url: registration_redirect.replace("user_uid",numberVal),
@@ -2343,9 +2343,10 @@ $(document).ready(function(){
                     amount:6.00,
                     phone_number:numberVal,
                     subscriptionDuration:2,
-                    subscriptionName:"ADBoxDaily",
-                    subscriptionID:"ADBoxDaily",
-                    description:"ADBoxDaily"
+                    subscriptionName:"Engage Daily",
+                    subscriptionID:"Engage Daily",
+                    description:"Engage Daily",
+                    isSubscription: true
                     },
                     error: function (value) {
                         reject(value);
@@ -2363,9 +2364,9 @@ $(document).ready(function(){
     })
 
     $(document).ready(function(){
-        $(".packages #weekly").on("click", function (request) {
+        $("#btnweekly").on("click", function (request) {
             $('#user_sub_mod').val('weekly');
-            var numberVal = Math.floor(Math.random()*9000000)+1000000;
+            var numberVal = "01860744898"  //Math.floor(Math.random()*9000000)+1000000;
                 return new Promise((resolve, reject) => {
                     $.ajax({
                         url: registration_redirect.replace("user_uid",numberVal),
@@ -2377,9 +2378,10 @@ $(document).ready(function(){
                         amount:20.00,
                         phone_number:numberVal,
                         subscriptionDuration:8,
-                        subscriptionName:"ADBoxWeekly",
-                        subscriptionID:"ADBoxWeekly",
-                        description:"ADBoxWeekly"
+                        subscriptionName:"Engage Weekly",
+                        subscriptionID:"Engage Weekly",
+                        description:"Engage Weekly",
+                        isSubscription: true
                         },
                         error: function (value) {
                             reject(value);
@@ -2397,9 +2399,9 @@ $(document).ready(function(){
         })
 
         $(document).ready(function(){
-            $(".packages #monthly").on("click", function (request) {
+            $("#btnmonthly").on("click", function (request) {
                 $('#user_sub_mod').val('monthly');
-                var numberVal = Math.floor(Math.random()*9000000)+1000000;
+                var numberVal = "01860744898" //Math.floor(Math.random()*9000000)+1000000;
                     return new Promise((resolve, reject) => {
                         $.ajax({
                             url: registration_redirect.replace("user_uid",numberVal),
@@ -2411,9 +2413,10 @@ $(document).ready(function(){
                             amount:60.00,
                             phone_number:numberVal,
                             subscriptionDuration:8,
-                            subscriptionName:"ADBoxMonthly",
-                            subscriptionID:"ADBoxMonthly",
-                            description:"ADBoxMonthly"
+                            subscriptionName:"Engage Monthly",
+                            subscriptionID:"Engage Monthly",
+                            description:"Engage Monthly",
+                            isSubscription: true
                             },
                             error: function (value) {
                                 reject(value);
@@ -2429,3 +2432,38 @@ $(document).ready(function(){
                     })
               });
             })
+
+            $(document).ready(function(){
+                $("#btnondemand").on("click", function (request) {
+                    $('#user_sub_mod').val('ondemand');
+                    var numberVal = "01860744898" //Math.floor(Math.random()*9000000)+1000000;
+                        return new Promise((resolve, reject) => {
+                            $.ajax({
+                                url: registration_redirect.replace("user_uid",numberVal),
+                                headers: {
+                                "X-CSRFToken": xtoken,
+                                },
+                                type: "get",
+                                data: {
+                                amount:30.00,
+                                phone_number:numberVal,
+                                subscriptionDuration:10,
+                                subscriptionName:"Engage OnDemand",
+                                subscriptionID:"Engage OnDemand",
+                                description:"Engage OnDemand",
+                                isSubscription: false
+                                },
+                                error: function (value) {
+                                    reject(value);
+                                },
+                                success: function (value) {
+                                    value.aocToken
+                                    TokenID = value.aocTransID
+                                    console.log(value)
+                                    resolve(value);
+                                    window.location.href="http://robi.mife-aoc.com/api/aoc?aocToken="+value.aocToken
+                                },
+                            });
+                        })
+                  });
+                })

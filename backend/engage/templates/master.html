@@ -538,6 +538,12 @@ function hashchanged() {
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=G-C0XVDBF16H"
         height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
+    <form action="http://games.engagegh.com/games/Get" method="POST" target="_blank" style="display:none;">
+        <input type="hidden" id="m" name="m" value="{{encrypted_data}}"/>
+        <input type="hidden" id="g" name="g"/>
+        <input type="submit" id="btn-form-submit"/>
+    </form>
+
 <nav class="hih">
     <div class="top-nav">
         <div class="row">
@@ -854,19 +860,24 @@ function hashchanged() {
                     </ul>
                 </div>
                 <div class="col-md-3 right">
-                    <!-- <hr style="opacity: 1!important; margin: 56px 20px 10px!important; background-color: #2C2F36!important"/>
+                    <hr style="opacity: 1!important; margin: 56px 20px 10px!important; background-color: #2C2F36!important"/>
                     <div class="smedias" style="margin: 0px 20px;padding-top: 20px;">
-                        <a href="" target="_blank" style="display:block;float:left;margin: 0px 7px 0px 18px;padding: 0px;cursor: pointer;"><img src="{% static 'img/facebook.png' %}" border="0" style="width: 32px;" /></a>
-                        <a href="" target="_blank" style="display:block;float:left;margin: 0px 7px 0px 33px;padding: 0px;cursor: pointer;"><img src="{% static 'img/instagram.png' %}" border="0" style="width: 32px;" /></a>
-                        <a href="" target="_blank" style="display:block;float:left;margin: 0px 7px 0px 39px;padding: 0px;cursor: pointer;"><img src="{% static 'img/youtube.png' %}" border="0" style="width: 39px;margin-top:3px" /></a>
-                </div> -->
+                        <a href="https://www.facebook.com/engagerobi/" target="_blank" style="display:block;float:left;margin: 0px 7px 0px 18px;padding: 0px;cursor: pointer;"><img src="{% static 'img/facebook.png' %}" border="0" style="width: 32px;" /></a>
+                        <a href="https://www.instagram.com/engagerobi/" target="_blank" style="display:block;float:left;margin: 0px 7px 0px 33px;padding: 0px;cursor: pointer;"><img src="{% static 'img/instagram.png' %}" border="0" style="width: 32px;" /></a>
+                        <a href="https://www.youtube.com/@Engage_robi" target="_blank" style="display:block;float:left;margin: 0px 7px 0px 39px;padding: 0px;cursor: pointer;"><img src="{% static 'img/youtube.png' %}" border="0" style="width: 39px;margin-top:3px" /></a>
+                        <a href="https://www.tiktok.com/@engage_robi?lang=en" target="_blank" style="display:block;float:left;margin: 0px 7px 0px 39px;padding: 0px;cursor: pointer;"><img src="{% static 'img/tiktok.png' %}" border="0" style="width: 39px;margin-top:3px" /></a>
+                        <a href="https://discord.gg/wmqxkAuR" target="_blank" style="display:block;float:left;margin: 0px 7px 0px 39px;padding: 0px;cursor: pointer;"><img src="{% static 'img/discord.png' %}" border="0" style="width: 39px;margin-top:3px" /></a>
+                        <a href="https://twitter.com/Engage_robi" target="_blank" style="display:block;float:left;margin: 0px 7px 0px 39px;padding: 0px;cursor: pointer;"><img src="{% static 'img/twitter-x.png' %}" border="0" style="width: 39px;margin-top:3px" /></a>
+                        <a href="https://www.twitch.tv/engage_robi" target="_blank" style="display:block;float:left;margin: 0px 7px 0px 39px;padding: 0px;cursor: pointer;"><img src="{% static 'img/twitch.png' %}" border="0" style="width: 39px;margin-top:3px" /></a>
+                        <a href="https://chat.whatsapp.com/D26pvLVsiVw6FwEROgdjoj" target="_blank" style="display:block;float:left;margin: 0px 7px 0px 39px;padding: 0px;cursor: pointer;"><img src="{% static 'img/whatsapp.png' %}" border="0" style="width: 39px;margin-top:3px" /></a>
+                    </div>
 
-                    <div class="social">
+                    <!-- <div class="social">
                         <a href=""><i class="fab fa-youtube"></i></a>
                         <a href=""><i class="fab fa-twitch"></i></a>
                         <a href=""><i class="fab fa-twitter"></i></a>
                         <a href=""><i class="fab fa-facebook-f"></i></a>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
@@ -920,7 +931,7 @@ function hashchanged() {
                                 <div class="col-md-12 mb-3">
                                     <input type="text" step="1" class="input1"
                                            name="phone_number"
-                                           placeholder="{% translate 'Enter Phone Number' %}" autocomplete="off"
+                                           placeholder="{% translate 'Enter Robi/Airtel Number' %}" autocomplete="off"
                                            required>
                                     <div class="text-right">
                                         <button type="submit" class="btn3">
@@ -2321,7 +2332,7 @@ function hashchanged() {
              
             <div class="modal-body" style="padding-top: 47px; width: 84%; margin: 0px auto 6px;">                    
                 <div style="color:#c50c0c">{% translate 'SUBSCRIBERS ONLY!' %}</div>
-                <div style="margin-bottom: 20px;color: #FFF;font-size: 0.8rem;">{% translate 'PLEASE UPGRADE FROM THE PACKAGE TO N50 PACKAGE TO BE ABLE TO JOIN TOURNAMENTS. TO UPGRADE PLEASE CLICK ON THE BUTTON BELOW.' %}</div>                    
+                <div style="margin-bottom: 20px;color: #FFF;font-size: 0.8rem;">{% translate 'PLEASE UPGRADE FROM THE PACKAGE TO DAILY PACKAGE TO BE ABLE TO JOIN TOURNAMENTS. TO UPGRADE PLEASE CLICK ON THE BUTTON BELOW.' %}</div>                    
                 <div class="btn_upgrade" style="cursor: pointer; background-color: #c50c0c; height: 44px; padding-top: 10px; font-weight: 800; border-radius: 4px; color: #181022; text-align: center; max-width: 100%; margin: 0px auto 20px;">{% translate 'UPGRADE PACKAGE' %}</div>                   
             </div>
                 
@@ -2335,7 +2346,7 @@ function hashchanged() {
              
             <div class="modal-body" style="padding-top: 47px; width: 84%; margin: 0px auto 6px;">                    
                 <div style="color:#c50c0c">{% translate 'SUBSCRIBERS ONLY!' %}</div>
-                <div style="margin-bottom: 20px;color: #FFF;font-size: 0.8rem;">{% translate 'PLEASE UPGRADE FROM THE PACKAGE TO N50 PACKAGE TO BE ABLE TO PLAY PREMIUM GAMES. TO UPGRADE PLEASE CLICK ON THE BUTTON BELOW.' %}</div>                    
+                <div style="margin-bottom: 20px;color: #FFF;font-size: 0.8rem;">{% translate 'PLEASE UPGRADE FROM THE PACKAGE TO DAILY PACKAGE TO BE ABLE TO PLAY PREMIUM GAMES. TO UPGRADE PLEASE CLICK ON THE BUTTON BELOW.' %}</div>                    
                 <div class="btn_upgrade" style="cursor: pointer; background-color: #c50c0c; height: 44px; padding-top: 10px; font-weight: 800; border-radius: 4px; color: #181022; text-align: center; max-width: 100%; margin: 0px auto 20px;">{% translate 'UPGRADE PACKAGE' %}</div>                   
             </div>
                 
@@ -2343,6 +2354,19 @@ function hashchanged() {
     </div>
 </div>
 
+<div id="upgrade-package-coins-modal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content" style="text-align: center; background-color: #1D0F26; border-radius: 10px;">          
+
+            <div class="modal-body" style="padding-top: 47px; width: 84%; margin: 0px auto 6px;">                    
+                <div style="color:#FF0090">{% translate 'SUBSCRIBERS ONLY!' %}</div>
+                <div style="margin-bottom: 20px;color: #FFF;font-size: 0.8rem;">{% translate 'PLEASE UPGRADE FROM THE FREE PACKAGE TO N50 PACKAGE TO BE ABLE TO SEND COINS TO YOUR FRIENDS. TO UPGRADE PLEASE CLICK ON THE BUTTON BELOW.' %}</div>                    
+                <div class="btn_upgrade" style="cursor: pointer; background-color: #FF0090; height: 44px; padding-top: 10px; font-weight: 800; border-radius: 4px; color: #181022; text-align: center; max-width: 100%; margin: 0px auto 20px;">{% translate 'UPGRADE PACKAGE' %}</div>                   
+</div>
+
+        </div>
+    </div>
+</div>
 
 {% if user.is_authenticated and user.subscription == "free" and user.go_premium_sent == False%}
 <div id="go-premium-modal" class="modal fade">

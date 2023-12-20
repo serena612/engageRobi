@@ -66,7 +66,9 @@ class OperatorWebsite(TranslatableTimeStampedModel): #TimeStampedModel
     first_section_url = models.URLField(blank=True, null=True)
     about_us_description = RichTextField(blank=False, null=True)
     terms_description = RichTextField('Terms & Conditions', blank=False, null=True)
-    
+    advertisement_card = models.ImageField(upload_to='home_page_image/',
+                                            blank=True,null=True,verbose_name='Advertisement Card')  
+    advertisement_card_link = models.URLField(blank=True, null=True)
 
 class OperatorHomeSection(TranslatableModel): #models.Model
     translations = TranslatedFields(

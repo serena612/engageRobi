@@ -44,7 +44,8 @@ class MatchStatus(LabelChoices):
 class TournamentPrizeType(LabelChoices):
     CASH = 'cash', 'Cash'
     # TICKETS = 'tickets', 'Tickets'
-    DATA = 'data', 'Data'
+    DATA = 'data', 'Daraz Voucher'
+    OTHERS = 'others', 'Others'
 
 
 class RoundNumber(LabelChoices):

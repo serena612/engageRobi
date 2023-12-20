@@ -487,9 +487,9 @@ class TournamentViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin,
             #sched=str(match.start_date)
             if match.start_date:
                 if match.tournament.label_next_time and match.tournament.time_compared_to_gmt:
-                    date_time = (match.start_date+timedelta(hours=int(match.tournament.time_compared_to_gmt))).strftime("%H:%M") + " "+ match.tournament.label_next_time
+                    date_time = (match.start_date+timedelta(hours=int(match.tournament.time_compared_to_gmt))).strftime("%I:%M %p") + " "+ match.tournament.label_next_time
                 else:
-                    date_time = match.start_date.strftime("%H:%M")
+                    date_time = match.start_date.strftime("%I:%M %p")
             else:
                 date_time = ''
 

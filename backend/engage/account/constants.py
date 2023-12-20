@@ -52,6 +52,7 @@ class SubscriptionPlan(LabelChoices):
     DAILY = 'daily', 'Daily'
     WEEKLY = 'weekly', 'Weekly'
     MONTHLY = 'monthly', 'Monthly'
+    ONDEMAND = 'ondemand', 'Ondemand'
 
 class SubscriptionPackages(LabelChoices):
     FREE = 'free', 'Free'
@@ -60,6 +61,7 @@ class SubscriptionPackages(LabelChoices):
     DAILY = 'daily', 'Daily'
     WEEKLY = 'weekly', 'Weekly'
     MONTHLY = 'monthly', 'Monthly'
+    ONDEMAND = 'ondemand', 'Ondemand'
 
 
 class SectionLog(LabelChoices):

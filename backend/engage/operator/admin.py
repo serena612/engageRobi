@@ -48,6 +48,8 @@ class OperatorFaqInline(CompactInline):
 
 class OperatorWebsiteInline(TranslatableStackedInline): # admin.StackedInline
     model = OperatorWebsite
+    show_change_link = True
+    can_delete = True
     min_num = 1
     max_num = 1
 

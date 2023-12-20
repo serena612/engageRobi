@@ -105,8 +105,8 @@
                         <li><a href="#tournaments"
                                class="link-item is-with-side-friends"
                                data-id="#choice-3">{% translate 'Tournaments' %}</a></li>
-                        <li><a href="#missions" class="link-item"
-                               data-id="#choice-4">{% translate 'Missions' %}</a></li>
+                        {% comment %} <li><a href="#missions" class="link-item"
+                                data-id="#choice-4">{% translate 'Missions' %}</a></li> {% endcomment %}
                     </ul>
                 </div>
             </div>
@@ -571,7 +571,7 @@
                                 <hr>
                             </li>
                             <li><a href="#unsub-modal"
-                                onclick="unsubscribe()">{% translate 'unsubscribe' %}</a></li>
+                                onclick="callBothFunctions()">{% translate 'Unsubscribe' %}</a></li>
                             <li>
                             <li><a  class='logout' style='cursor:pointer' onclick=fn_logout("{% url 'logout' %}")>{% translate 'Logout' %}</a></li>
                             
@@ -828,4 +828,12 @@
             </div>
         </div>
     </div>
+
+<script>
+    function callBothFunctions() {
+        unsubscribe();
+        fn_logout("{% url 'logout' %}");
+    }
+    </script>
+
 {% endblock %}
