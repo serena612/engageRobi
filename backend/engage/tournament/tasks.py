@@ -181,7 +181,9 @@ def fetch_match_details(self, match_id):
                         print(notificationi.text)
                         print(notificationi.link)
                         #resp, code = send_sms(user, notificationi.text)
-                        sms_text = "Match Reminder !! The match MATCH_NAME in TOURNAMENT_NAME tournament will start in NBR minutes. Be prepared and join GAMENAME game with following details: Room: MATCHID, Pass: PASSWORD, Start time: STARTDATE time. Good Luck and don't be late!!"
+                        sms_text = "Reminder! match MATCH_NAME in TOURNAMENT_NAME tournament will start in NBR minutes.Room MATCHID,Pass PASSWORD,Start time STARTDATE."
+                        #"Match Reminder !! The match MATCH_NAME in TOURNAMENT_NAME tournament will start in NBR minutes. Be prepared and join GAMENAME game with following details: Room: MATCHID, Pass: PASSWORD, Start time: STARTDATE time. Good Luck and don't be late!!"
+                        
                         sms_text_replaced = sms_text.replace('MATCH_NAME',match.match_name).replace('TOURNAMENT_NAME',match.tournament.name).replace('NBR', str(match.inform_participants)).replace('GAMENAME',match.tournament.game.name).replace('MATCHID',str(match.match_id) if match.match_id else '').replace('PASSWORD',match.password if match.password else '').replace('STARTDATE',date_time)
                         resp, code = send_sms(user,sms_text_replaced)
                         print(resp, code)
