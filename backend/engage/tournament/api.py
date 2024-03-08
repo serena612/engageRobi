@@ -289,8 +289,11 @@ class TournamentViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin,
         linked_account = user.usergamelinkedaccount_set.filter(
             game=tournament.game
         ).first()
-        if not linked_account:
-            raise GameAccountUnavailable()
+
+        
+        if "html5" not in tournament.game.slug.lower() and "HTML5" not in tournament.game.slug:
+            if not linked_account:
+                raise GameAccountUnavailable()
 
         if not tournament.allow_free_users:
             if user.subscription == SubscriptionType.FREE: 

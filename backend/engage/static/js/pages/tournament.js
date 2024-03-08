@@ -422,3 +422,146 @@ $('.btn_upgrade').on("click", function () {
         showInfoModal('Error!', '<p>Something went wrong, please try again later.</p>')
     });
   });
+
+  function fetchLeaderboard() {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: leaderboard_results.replace("user_uid", user_uid),
+            headers: {
+                "X-CSRFToken": xtoken,
+            },
+            type: "post",
+            data: {
+                game: game_name,
+                idtournament: tournament_id
+            },
+            error: function (value) {
+                reject(value);
+            },
+            success: function (value) {
+                console.log("Received value:", value);
+
+                // Clear previous data
+                $('.td_user').empty();
+                $('.td_score').empty();
+                $('.td_rank').empty();
+		$(".scoreList tbody tr").not(':first').remove();
+		
+                if (Array.isArray(value) && value.length > 0) {
+                    // Sort the winners based on the score in descending order
+                    value.sort((a, b) => b.score - a.score);
+
+                    // Loop through winners and append to HTML
+                    value.forEach(function (winner, index) {
+						console.log(winner.username.toLowerCase() , user_username.toLowerCase());
+						
+                        if (winner.username.toLowerCase() == user_username.toLowerCase()) {
+							$(".scoreList tbody").append('<tr> <td width="150" class="td_user highlight-row" style="color: #a600a2;"><i class="fas fa-arrow-right arrow-icon" style="color: #a600a2;"></i>' + winner.nickname+'</td> <td width="150" class="td_score highlight-row" style="color: #a600a2;">'+winner.score+'</td> <td width="150" class="td_rank highlight-row" style="color: #a600a2;">'+(index + 1)+'</td> </tr>');
+						}
+						else
+						{						
+							$(".scoreList tbody").append('<tr> <td width="150" class="td_user" >' + winner.nickname+'</td> <td width="150" class="td_score" >'+winner.score+'</td> <td width="150" class="td_rank" >'+(index + 1)+'</td> </tr>');
+
+						}
+                    });
+
+                    // Store the first winner in local storage (you can modify this as needed)
+                    localStorage.setItem('username', value[0].username);
+                    localStorage.setItem('score', value[0].score);
+                } else {
+                    console.log("No winners found");
+                }
+
+                resolve(value);
+            },
+        });
+    });
+}
+
+
+$(document).ready(function () {
+    // Retrieve values from local storage and update the HTML elements
+    if($('.td_user').length!=0)
+    $('.td_user').text(localStorage.getItem('username') || '');
+    if($('.td_score').length!=0)
+    $('.td_score').text(localStorage.getItem('score') || '');
+
+    if(navigator.userAgent.match(/(iPod|iPhone|iPad)/i) || navigator.userAgent.includes("Mac")) {   
+        $("#formgameid").removeAttr('target');
+      }
+});
+
+
+$('.playnow_btn').on("click", function () {
+    check_html5_status();
+});
+
+function check_html5_status() {
+    $("#user-game-modal").modal("hide");
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: check_user_status.replace("user_uid", user_uid),
+            headers: {
+                "X-CSRFToken": xtoken,
+            },
+            type: "post",
+            data: {},
+            error: function (value) {
+                reject(value);
+            },
+            success: function (value) {
+                resolve(value);
+                console.log("value", value, value.status);
+                // Check if not the same status
+                if (value.status != $('#userSub').val()) {
+                    window.location.reload();
+                    //openG(game_name, tournament_id);
+                } else {
+                    check_html5billed_status();
+                    //$("#user-game-modal").modal("show");
+                }
+            },
+        });
+    });
+}
+
+function check_html5billed_status() {
+    check_new_billed_user(user_uid).then(res => {
+        res['is_billed'] = false
+        if (res['is_billed'] == false) {
+            $("#user-game-modal").modal("show");
+        } else {
+            return new Promise((resolve, reject) => {
+                $.ajax({
+                    url: update_billed_status.replace("user_uid", user_uid),
+                    headers: {
+                        "X-CSRFToken": xtoken,
+                    },
+                    type: "post",
+                    data: {},
+                    error: function (value) {
+                        reject(value);
+                    },
+                    success: function (value) {
+                        resolve(value);
+                        if (game_slug.toLowerCase().includes('html5'))
+                        {
+                            openG(game_name, tournament_id)
+                            
+                        }
+                    },
+                });
+            });
+        }
+    })
+    
+}
+
+
+function openG(gameName, tournament_id) {
+  $('#formgameid').attr('action', '');
+  $("#g").val(gameName);
+  $("#t").val(tournament_id);
+  
+  $('#btn-form-submit').click();
+}

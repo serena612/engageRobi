@@ -156,17 +156,38 @@ if (timeleft < 0) {
                             {% endif %}    
                         </li>
                         <li>
-                            {% if tournament.leader_board_link %}
-                                <a id="practice" href="{{ tournament.leader_board_link }}" target="_blank">
-                            {% else %}
-                                <a id="practice" href="{% if tournament.leader_board_link %}{{ tournament.leader_board_link }}{% endif %}"
-                                    data-link-android="{{ tournament.game.android_link }}"
-                                    data-link-ios="{{ tournament.game.ios_link }}"
-                                    data-link-pc="{{ tournament.game.pc_link }}"
-                                    target="_blank">
-                            {% endif %}
-                                {% translate 'Practice' %}
+                            {% if 'html5' in tournament.game.slug|lower %}
+                                
+                                <a href="#leaderboard" data-id="#leaderboard-box" id="leaderboard-button">
+                                    {% translate 'Leaderboard' %}
                                 </a>
+
+                                <script>
+                                    $(document).ready(function () {
+                                        $('#leaderboard-button').on('click', function () {
+                                            fetchLeaderboard();
+                                        });
+
+                                    });
+
+                                </script>
+
+                                
+                            {% else %}
+                                {% if tournament.leader_board_link %}
+                                    <a id="practice" href="{{ tournament.leader_board_link }}" target="_blank">
+                                        {% translate 'Leaderboard' %} 
+                                {% else %}
+                                    <a id="practice" href="{% if tournament.leader_board_link %}{{ tournament.leader_board_link }}{% endif %}"
+                                        data-link-android="{{ tournament.game.android_link }}"
+                                        data-link-ios="{{ tournament.game.ios_link }}"
+                                        data-link-pc="{{ tournament.game.pc_link }}"
+                                        target="_blank">
+                                    {% translate 'Practice' %}
+                                {% endif %}
+                                {% endif %}
+                                    
+                                    </a>
                         </li>
                         <li id="joinStatus">
                         {% if participant %}
@@ -310,7 +331,7 @@ if (timeleft < 0) {
                                         <div class="widget-3 widget">
                                             <div class="title-wrapper type-2">
                                                 <h3 class="box-title">
-                                                    {% translate 'Tournament Prizes' %}</h3>
+                                                    {% translate 'Tournament Prizes Worth' %}</h3>
                                                 <div class="clear"></div>
                                             </div>
 
@@ -407,8 +428,47 @@ if (timeleft < 0) {
                 </ul>
             {% endif %}
         </section> {% endcomment %}
+
+        <section class="tab-section page-tab-content p-content" id="leaderboard-box" style="display: none;">
+            <div class="profile-contain">
+                <div class="left">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="tour-details-box">
+                                <div class="left2"></div>
+                                <div class="right2">
+                                    <div>
+                                        <div class="widget-3 widget">
+                                            <div class="title-wrapper type-2">
+                                                <h3 class="box-title">
+                                                    {% translate 'LEADERBOARD' %}
+                                                </h3>
+                                                <div class="clear"></div>
+                                            </div>
+        
+                                            <div class="wcontainer p-container">
+                                                <table class="table-1 scoreList" >
+                                                    <tr>
+                                                        <td width="150">{% translate 'User' %}</td>
+                                                        <td width="150">{% translate 'Score' %}</td>
+                                                        <td width="150">{% translate 'Rank' %}</td>
+                                                    </tr>
+                                        
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </div>
 {% endblock %}
+
 
 {% block modals %}
     {{ block.super }}
