@@ -101,7 +101,7 @@
             var getBtn_transl = {% blocktrans %}"Please login or register to Engage to buy coins, increase your balance, and win multiple cash and other prizes" {% endblocktrans %};
             var redeemGifts_transl = {% blocktrans %}"Please login or register to Engage to redeem gifts and win multiple cash and other prizes" {% endblocktrans %};
             var join_now = {% blocktrans %}"JOIN NOW" {% endblocktrans %};
-            var pool_prize = {% blocktrans %}"POOL PRIZE" {% endblocktrans %};
+            var pool_prize = {% blocktrans %}"POOL PRIZE WORTH" {% endblocktrans %};
             var register = {% blocktrans %}"REGISTER" {% endblocktrans %};
             var send_coins = {% blocktrans %}"Send Coins" {% endblocktrans %};
             var unfriend = {% blocktrans %}"Unfriend" {% endblocktrans %};
@@ -385,6 +385,7 @@ function hashchanged() {
                 var unsubscribe_api = "{% url 'user-unsubscribe-api' 'user_uid' %}";
                 var featured_game_retrieve =  '/api/featured_games/';
                 var update_go_premium_flag = "{% url 'user-update-go-premium-flag' 'user_uid' %}"
+                var leaderboard_results = "{% url 'user-leaderboard-results' 'user_uid' %}";
                 
             </script>
             <script type="application/javascript"
@@ -400,7 +401,7 @@ function hashchanged() {
         <script type="application/javascript"
                 src="{% static 'js/forms.js' %}?v=6"></script>
         <script type="application/javascript"
-                src="{% static 'js/api.js' %}?v=6"></script>
+                src="{% static 'js/api.js' %}?v=7"></script>
     {% endblock %}
 
     <style type="text/css">
@@ -538,9 +539,10 @@ function hashchanged() {
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=G-C0XVDBF16H"
         height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
-    <form action="http://games.engagegh.com/games/Get" method="POST" target="_blank" style="display:none;">
+    <form action="" method="POST" target="_blank" style="display:none;" id = "formgameid" name = "formgameid">
         <input type="hidden" id="m" name="m" value="{{encrypted_data}}"/>
         <input type="hidden" id="g" name="g"/>
+        <input type="hidden" id="t" name="t"/>
         <input type="submit" id="btn-form-submit"/>
     </form>
 

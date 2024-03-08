@@ -464,7 +464,7 @@ function load (pg) {
                                 </div>`;
                                 if(state=='ongoing'){
                                     if(item.sponsored_by==null){
-                                        html+=`<div class='pool_prize'><span>POOL PRIZE</span>
+                                        html+=`<div class='pool_prize'><span>POOL PRIZE WORTH</span>
                                         <i class="fas fa-trophy"></i>
                                         ${item.pool_prize !=null ? item.pool_prize : ''}  
                                         <span>${item.pool_prize_amount !=null ? item.pool_prize_amount : '&nbsp;' } </span>
@@ -489,7 +489,7 @@ function load (pg) {
                                         </div>`;
                                 }   
                                 if(state=='upcoming'){
-                                    html+=`<div class='pool_prize'><span>POOL PRIZE</span>
+                                    html+=`<div class='pool_prize'><span>POOL PRIZE WORTH</span>
                                     <i class="fas fa-trophy"></i>
                                     ${item.pool_prize !=null ? item.pool_prize : ''}  
                                     <span>${item.pool_prize_amount !=null ? item.pool_prize_amount : '&nbsp;' } </span>
@@ -588,7 +588,7 @@ function load (pg) {
                                 </div>`;
                                 if(state=='ongoing'){
                                     if(item.sponsored_by==null){
-                                        html+=`<div class='pool_prize'><span>POOL PRIZE</span>
+                                        html+=`<div class='pool_prize'><span>POOL PRIZE WORTH</span>
                                         <i class="fas fa-trophy"></i>
                                         ${item.pool_prize !=null ? item.pool_prize : ''}  
                                         <span>${item.pool_prize_amount !=null ? item.pool_prize_amount : '&nbsp;' } </span>
@@ -613,7 +613,7 @@ function load (pg) {
                                         </div>`;
                                 }   
                                 if(state=='upcoming'){
-                                    html+=`<div class='pool_prize'><span>POOL PRIZE</span>
+                                    html+=`<div class='pool_prize'><span>POOL PRIZE WORTH</span>
                                     <i class="fas fa-trophy"></i>
                                     ${item.pool_prize !=null ? item.pool_prize : ''}  
                                     <span>${item.pool_prize_amount !=null ? item.pool_prize_amount : '&nbsp;' } </span>
@@ -823,7 +823,7 @@ function get_tournament(game,str) {
                                 </div>`;
                                 if(state=='ongoing'){
                                     if(item.sponsored_by==null){
-                                        html+=`<div class='pool_prize'><span>POOL PRIZE</span>
+                                        html+=`<div class='pool_prize'><span>POOL PRIZE WORTH</span>
                                         <i class="fas fa-trophy"></i>
                                         ${item.pool_prize !=null ? item.pool_prize : ''}  
                                         <span>${item.pool_prize_amount !=null ? item.pool_prize_amount : '&nbsp;' } </span>
@@ -848,7 +848,7 @@ function get_tournament(game,str) {
                                         </div>`;
                                 }   
                                 if(state=='upcoming'){
-                                    html+=`<div class='pool_prize'><span>POOL PRIZE</span>
+                                    html+=`<div class='pool_prize'><span>POOL PRIZE WORTH</span>
                                     <i class="fas fa-trophy"></i>
                                     ${item.pool_prize !=null ? item.pool_prize : ''}  
                                     <span>${item.pool_prize_amount !=null ? item.pool_prize_amount : '&nbsp;' } </span>
@@ -969,7 +969,7 @@ function get_tournament(game,str) {
                                 </div>`;
                                 if(state=='ongoing'){
                                     if(item.sponsored_by==null){
-                                        html+=`<div class='pool_prize'><span>POOL PRIZE</span>
+                                        html+=`<div class='pool_prize'><span>POOL PRIZE WORTH</span>
                                         <i class="fas fa-trophy"></i>
                                         ${item.pool_prize !=null ? item.pool_prize : ''}  
                                         <span>${item.pool_prize_amount !=null ? item.pool_prize_amount : '&nbsp;' } </span>
@@ -994,7 +994,7 @@ function get_tournament(game,str) {
                                         </div>`;
                                 }   
                                 if(state=='upcoming'){
-                                    html+=`<div class='pool_prize'><span>POOL PRIZE</span>
+                                    html+=`<div class='pool_prize'><span>POOL PRIZE WORTH</span>
                                     <i class="fas fa-trophy"></i>
                                     ${item.pool_prize !=null ? item.pool_prize : ''}  
                                     <span>${item.pool_prize_amount !=null ? item.pool_prize_amount : '&nbsp;' } </span>
