@@ -135,7 +135,7 @@ def empty_view(request):
     print("empty_viewwww")
     if 'msisdn' in request.session:
         if not request.user.is_authenticated:
-            redirect_url = 'https://www.engagewinner.com/Landing'
+            redirect_url = 'http://games.engagewinner.com/Landing'
             return redirect(redirect_url)
             #return redirect('https://mtn.engageplaywin.com/Landing')
         else:
@@ -143,7 +143,7 @@ def empty_view(request):
     elif request.user.is_authenticated:
         return redirect('/home')
     else:
-        return redirect('https://www.engagewinner.com/Landing')
+        return redirect('http://games.engagewinner.com/Landing')
 
 def decrypt_msisdn(key, encrypted_msisdn):
     key = b64decode(key)
@@ -274,7 +274,8 @@ def home_view(request):
     print("---------------------------------------home_view")
 
     key = "Zjg0ZGJhYmI1MzJjNTEwMTNhZjIwYWE2N2QwZmQ1MzU="  # Replace with your encryption key
-    encrypted_msisdn = request.GET.get('encrypted_msisdn', '')  # Replace with the encrypted MSISDN
+    encrypted_msisdn = request.GET.get('app', '')  # Replace with the encrypted MSISDN
+    profile = request.GET.get('p', '')
 
     if encrypted_msisdn:
         decrypted_msisdn = decrypt_msisdn(key, encrypted_msisdn)
@@ -283,8 +284,20 @@ def home_view(request):
             decrypted_msisdn = '88' + without_0
         print("^^^Decrypted msisdn", decrypted_msisdn)
     
-    if decrypted_msisdn:
+    #if decrypted_msisdn:
         request.session['msisdn'] = decrypted_msisdn
+        if profile:
+            mobilen = request.session['msisdn']
+            request.user = mobilen
+            user = UserModel.objects.filter(
+                mobile__iexact=mobilen,
+                region=request.region,
+            
+                ).first()
+            if user:
+                login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+                return redirect ('/profile')
+            
 
     if 'msisdn' in request.session:
         user = request.session['msisdn']

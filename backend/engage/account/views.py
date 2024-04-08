@@ -30,6 +30,65 @@ from engage.tournament.models import Tournament, TournamentPrize
 from django.db.models import F, Q,Prefetch
 from engage.operator.models import OperatorAd
 from engage.account.models import UserTransactionHistory
+from base64 import b64encode
+from base64 import b64decode
+from cryptography.hazmat.primitives import padding
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from os import urandom
+from engage.account.api import do_register
+from django.contrib.auth import get_user_model, login
+from engage.account.constants import SubscriptionPlan
+from cryptography.fernet import Fernet
+
+UserModel = get_user_model()
+
+def decrypt_msisdn(key, encrypted_msisdn):
+    key = b64decode(key)
+    
+    # Reverse the replacements in the encrypted MSISDN
+    encrypted_msisdn = encrypted_msisdn.replace("dsslsshd", "/").replace("dsplussd", "+")
+    
+    # Decode the base64-encoded encrypted MSISDN
+    iv_and_ciphertext = b64decode(encrypted_msisdn.encode('utf-8'))
+    
+    # Split IV and ciphertext
+    iv = iv_and_ciphertext[:16]
+    ciphertext = iv_and_ciphertext[16:]
+    
+    # Initialize the decryption cipher
+    cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
+    decryptor = cipher.decryptor()
+    
+    # Decrypt and unpad the data
+    decrypted_data = decryptor.update(ciphertext) + decryptor.finalize()
+    unpadder = padding.PKCS7(128).unpadder()
+    unpadded_data = unpadder.update(decrypted_data) + unpadder.finalize()
+    
+    # Decode the UTF-8 data to get the original MSISDN
+    msisdn = unpadded_data.decode('utf-8')
+    
+    return msisdn
+
+def encrypt_msisdn(msisdn):
+    key = 'ZmDfcTF7_60GrrY167zsiPd67pEvs0aGOv2oasOM1Pg='
+    cipher_suite = Fernet(key)
+    encrypted_msisdn = cipher_suite.encrypt(msisdn.encode())
+    return encrypted_msisdn
+
+def encrypt_msisdn(key, msisdn):
+    key = b64decode(key)
+    iv = urandom(16)
+    cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
+    encryptor = cipher.encryptor()
+    padder = padding.PKCS7(128).padder()
+    padded_data = padder.update(msisdn.encode('utf-8')) + padder.finalize()
+    ciphertext = encryptor.update(padded_data) + encryptor.finalize()
+
+    iv_and_ciphertext = iv + ciphertext
+    base64_encrypted_msisdn = b64encode(iv_and_ciphertext).decode('utf-8')
+    base64_encrypted_msisdn_new = base64_encrypted_msisdn.replace("/", "dsslsshd").replace("+", "dsplussd")
+    print('$$$$$$$$$ base64_encrypted_msisdn_new', base64_encrypted_msisdn_new)
+    return base64_encrypted_msisdn_new
 
 def public_profile_view(request, uid):
     try:
@@ -156,7 +215,14 @@ def logout_view(request):
     request.user.save()
     request.session.flush()
     logout(request)
-    response = redirect('/')  # django.http.HttpResponse
+    #response = redirect('/')  # django.http.HttpResponse
+    m = 'logout'
+    key = 'Zjg0ZGJhYmI1MzJjNTEwMTNhZjIwYWE2N2QwZmQ1MzU='
+    encrypted_data = encrypt_msisdn(key,m)
+
+    redirect_url = 'http://games.engagewinner.com/Landing'
+    response = redirect(f'{redirect_url}?m={encrypted_data}')
+
     response.set_cookie(key='logged_out', value=datetime.now().isoformat())
     return response
 
@@ -195,10 +261,55 @@ def set_game_linked_account(request):
 
     return JsonResponse({}, status=200)
 
+def attempt_login_register(request):
+    print("-----------------------------------attempt_login_register")
+    print("-----------------------------------request.session", request.session)
+    print("-----------------------------------request.user.is_authenticated", request.user.is_authenticated)
+    if 'msisdn' not in request.session or request.user.is_authenticated:
+       print("inside first if")
+       return
+    try:
+        mobilen = request.session['msisdn']
+        print("----------------------------------mobilen ",mobilen)
+        request.user = mobilen
+        print("yos-request.user",request.user)
+        user = UserModel.objects.filter(
+            mobile__iexact=mobilen,
+            region=request.region
+        ).first()
+        if user:
+            #user found attempt direct login
+            usermob = str(user.mobile)
+            print("------------------------------login")
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+        else:
+            # user not found attempt registration
+            usermob = mobilen
+            print("-------------------------------usermob",usermob)
+            do_register(None, request, usermob, SubscriptionPlan.FREE)
+    
+    except UserModel.DoesNotExist:
+        usermob = mobilen
+        do_register(None, request, usermob, SubscriptionPlan.FREE)
 
 def prizes_view(request):
     if request.user.is_staff or request.user.is_superuser :
         return redirect('/auth/logout/')  
+    
+    key = "Zjg0ZGJhYmI1MzJjNTEwMTNhZjIwYWE2N2QwZmQ1MzU="  # Replace with your encryption key
+    encrypted_msisdn = request.GET.get('app', '')  # Replace with the encrypted MSISDN
+
+    if encrypted_msisdn:
+        decrypted_msisdn = decrypt_msisdn(key, encrypted_msisdn)
+        if decrypted_msisdn.startswith('0'):
+            without_0 = decrypted_msisdn[1:]
+            decrypted_msisdn = '92' + without_0
+        print("^^^Decrypted msisdn", decrypted_msisdn)
+    
+        request.session['msisdn'] = decrypted_msisdn
+        attempt_login_register(request)
+    else:
+      print("CHC-request.user not found")
 
     purchase_coins = PurchaseCoin.objects.filter(
         operator__region=request.region
